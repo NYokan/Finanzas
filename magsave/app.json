@@ -40,6 +40,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "70cc5c0f-f058-4615-ad7a-d7e2cf6b2f02"
+      }
+    },
+    "owner": "nyokan"
   }
 }
