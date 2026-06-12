@@ -91,6 +91,87 @@ Implementación: módulo `utils/advisor.ts` con funciones puras que reciben los 
 - Más aire vertical entre secciones: p.ej. `marginBottom: 32` bajo la tarjeta principal rosa antes de "Últimas transacciones".
 
 > Nota: este rediseño revierte el tema oscuro actual. Al implementarlo, actualizar también `app.json` (`userInterfaceStyle: "light"`, splash claro, status bar dark) y regenerar íconos/splash con el rosa si se quiere coherencia.
+
+### Segunda referencia visual (12-jun-2026, tarde)
+
+El usuario compartió un mockup fintech de **modo claro** que aporta el LAYOUT (el gradiente azul marino del mockup se reemplaza por el ROSA de la guía):
+- **Hero card** del Home: monto grande blanco arriba + **panel interior translúcido** (`rgba(255,255,255,0.25)`, radius ~16) con la meta/progreso (estilo "Your Saving Goals": barra fina con avance y montos a los extremos) + **dos botones blancos redondeados** al pie de la card (estilo "Send / Receive").
+- **Navbar minimal**: blanco, íconos + label pequeño, el activo en color de acento con `weight="fill"` y una **línea subrayada** bajo el tab activo — sin pastilla de fondo.
+- **Teclado numérico limpio**: números grandes oscuros sobre blanco, SIN fondos por tecla; solo el backspace como ícono.
+- **Chips de monto rápido** sobre el teclado (en el mockup "$5 $10 $20...") → adaptar a CLP: $1.000 / $5.000 / $10.000 / $20.000.
+- Botón de acción principal full-width al fondo (estilo "Send $12.00").
+
+---
+
+## PLAN DE EJECUCIÓN v3 (detallado — para la próxima sesión)
+
+Orden diseñado para commitear por fase y poder cortar en cualquier punto con la app sana. Después de CADA fase: `npx tsc --noEmit` limpio.
+
+### Fase 0 — Bugfixes (15 min, commit propio)
+1. `components/charts/MonthlyBars.tsx`: `width = Dimensions.get('window').width - 130` (72 de layout + 42 de eje Y + margen) y recalcular `barWidth` con ese ancho. Probar mentalmente con 3/6/12 meses (6/12/24 barras).
+2. `app/(tabs)/fijos.tsx`: invertir `minHeight` del grid → `isBig ? 128 : 104`.
+
+### Fase 1 — Paleta modo claro + assets (commit propio)
+1. `constants/colors.ts` + `tailwind.config.js` (mismos valores, como siempre):
+   - `bg: '#F7F7F9'`, `surface: '#FFFFFF'`, `surfaceAlt: '#F0F0F0'`, `textPrimary: '#1C1C1E'`, `textSecondary: '#8E8E93'`, `border: '#ECECF0'`
+   - `primary: '#FF6A88'` (rosa de acento/interactivo), `primaryLight: '#FF9A9E'`, `primaryDim: '#FFE9EE'`
+   - gradiente hero: `['#FF9A9E', '#FECFEF']` (exportar como `HERO_GRADIENT` en colors.ts)
+   - `success: '#16A34A'`, `successDim: '#E8F6EE'`, `danger: '#E25C3D'`, `dangerDim: '#FDEDE6'`, `warning: '#D99A1B'` (versiones legibles sobre claro)
+   - `shadow`: bajar a `shadowOpacity: 0.05, shadowRadius: 8, elevation: 1`; agregar `glowPink = { shadowColor: '#FF9A9E', shadowOpacity: 0.3, shadowRadius: 15, elevation: 6 }`
+2. `app.json`: `backgroundColor: '#F7F7F9'`, splash `backgroundColor: '#F7F7F9'`, `userInterfaceStyle: 'light'`, adaptiveIcon background `#FF6A88`.
+3. `app/_layout.tsx`: `<StatusBar style="dark" />`.
+4. `scripts/generate-icons.js`: color del chanchito → `#FF6A88` (ícono blanco sobre rosa; splash chanchito rosa sobre claro) y regenerar (`npm i --no-save sharp && node scripts/generate-icons.js`).
+5. `components/ui/Skeleton.tsx` ya usa `colors.border` (queda gris claro solo con el cambio de token) — verificar contraste.
+
+### Fase 2 — Componentes base (commit propio)
+1. `Card`: padding más generoso (`p-5`), sombra suave nueva (viene del token), sin cambios de API.
+2. `ProgressBar`: track por defecto `#E8E8E8`; nueva variante `gradient` que rellena con `LinearGradient` rosa (para metas).
+3. `Button`: primary rosa; variante `ghost` rosa.
+4. `CategoryIcon`: default `bgColor: '#F0F0F0'` con el ícono en el color de la categoría (mantener prop para overrides).
+5. `NumericKeyboard`: estilo mockup — sin fondo por tecla, números `fontSize ~26` en `textPrimary`, backspace como ícono; agregar prop opcional `quickAmounts?: number[]` que renderiza chips de monto rápido arriba ($1.000/$5.000/$10.000/$20.000) y hace `onChange(String(monto))`.
+6. `GlassMetricCard`: rediseñar a **card blanca minimal** (ícono en círculo `#F0F0F0`, título gris, monto oscuro, badge rosa suave) — renombrar mentalmente a "MetricCard"; mantener el archivo/exports para no romper imports.
+7. `AppSheet`: fondo blanco, handle `#D8D8DC`; inputs internos pasan a `#F2F2F6` (los sheets usan `colors.bg`, revisar que quede bien).
+
+### Fase 3 — Hero card + Home (commit propio)
+1. Nuevo `components/ui/HeroBalanceCard.tsx`: `LinearGradient` HERO_GRADIENT, `borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)'`, radius 24, **glow rosa** (token `glowPink`), padding 20.
+   - Arriba: label blanco translúcido ("Presupuesto de junio") + monto grande blanco puro.
+   - Panel interior translúcido con la barra de progreso del presupuesto (gastado a la izq., total a la der., barra blanca fina).
+   - Pie: dos botones blancos redondeados **"+ Gasto"** y **"+ Ingreso"** (reemplazan el FAB del Home; abren TransactionSheet con el tipo).
+2. `app/(tabs)/index.tsx`: hero card reemplaza al BalanceHeader+dona del bloque presupuesto; `marginBottom: 32` bajo la hero; márgenes laterales 24px (`px-6`); la dona se mueve junto a los bloques Ingresos/Gastos o dentro de Reportes; carrusel con las MetricCards blancas; quitar el FAB (las acciones viven en la hero). Mantener "Próximos fijos" y "Últimas transacciones" (filas blancas).
+3. Whitespace general: revisar `gap`/`mt` entre secciones (mínimo 24-32).
+
+### Fase 4 — Navbar claro (commit propio)
+`app/(tabs)/_layout.tsx`: fondo blanco, sombra difusa; `TabIcon` sin View-pastilla → ícono rosa + `weight="fill"` activo, gris `#B0B0B5` inactivo; mostrar labels pequeños (como el mockup) con `tabBarShowLabel: true` y `tabBarLabelStyle` Inter 10px; **indicador subrayado**: línea de 16×3 rosa bajo el ícono activo (View dentro de TabIcon).
+
+### Fase 5 — Metas sin emojis (commit propio)
+1. `GoalSheet`: eliminar grid de EMOJIS, fila de sugeridos y diccionario `EMOJI_KEYWORDS`; quedan los 6 presets de TEXTO como chips. `emoji` se guarda igual en DB (not null): derivarlo del preset elegido o default `'🎯'`, sin UI.
+2. Tab Ahorro: cards de meta sin emoji protagonista — nombre + barra con gradiente rosa + montos; `GoalDetailSheet` sin el emoji gigante (título de texto).
+3. Quitar también el emoji del `EmptyState` de Ahorro si desentona (revisar en conjunto).
+
+### Fase 6 — Motor de consejos económicos local (commit propio)
+1. `utils/advisor.ts`: funciones puras `buildAdvice(inputs) => Advice[]` con `Advice = { id, icon, title, body, tone: 'info' | 'warn' | 'win' }`. Reglas (cada una con guard de datos suficientes):
+   - delta mes a mes por categoría (>20% → warn)
+   - ritmo vs presupuesto (proyección lineal del día del mes → "te pasas el día N")
+   - proyección de meta (promedio de aportes/semana → fecha estimada; comparar con deadline)
+   - peso de fijos sobre ingresos (>50% → warn, referencia 50/30/20)
+   - racha de registro (≥7 días → win)
+   - gastos hormiga (≥3 gastos < $5.000 misma categoría en la semana)
+2. `hooks/useAdvice.ts`: `useDbQuery` que junta `getMonthlySeries(2)`, `getExpensesByCategory`, `getBudgetSummary`, `getActiveFixedTotal`, `getMonthTotals`, metas con progreso, `getRegisteredDates` y llama `buildAdvice`.
+3. UI: sección "Consejos para ti" en **Reportes** (cards blancas con ícono por tone); si hay ≥1 consejo, mostrar el primero también como banner discreto en Home.
+4. Edge: con DB vacía debe devolver `[]` sin crash (probar).
+
+### Fase 7 — Verificación y entrega
+1. `npx tsc --noEmit` + `npx expo export --platform android --output-dir dist-check` (borrar después).
+2. Commit + push de lo restante.
+3. `npx eas-cli build --platform android --profile preview --non-interactive --no-wait` + monitorear con `eas build:view <id> --json` y entregar el link del APK.
+4. Actualizar este archivo: marcar v3 hecha, mover lo no hecho a pendientes.
+
+### Notas para quien implemente
+- El usuario quiere el ROSA como identidad (el azul del mockup es solo referencia de layout/limpieza).
+- Los `font-sans` en cada Text son obligatorios (fuente Inter).
+- No tocar la capa de datos: todo esto es UI + `utils/advisor.ts` nuevo.
+- Scrollables dentro de sheets: siempre de `react-native-gesture-handler`.
+- Listas de pantalla: `paddingBottom` ≥130 por el navbar flotante.
 - [ ] **Capturas de pantalla** para las tablas de placeholders del README (requiere emulador o dispositivo; no hay ninguno configurado en esta máquina).
 - [ ] **Probar en dispositivo real**: notificaciones de gastos fijos (recordatorio día anterior 9am), haptics, confetti al completar meta, swipe-para-eliminar.
 - [x] **Generar el APK**: hecho — proyecto EAS `@nyokan/magsave`, build preview `a784d6e3` (12-jun-2026). Para nuevos builds: `npx eas-cli build --platform android --profile preview --non-interactive --no-wait` (la sesión de `eas login` ya quedó iniciada en esta máquina).
