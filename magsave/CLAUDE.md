@@ -20,8 +20,9 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Pendientes
 
-- [ ] **Generar el APK**: `eas login` con la cuenta de Expo y `eas build --platform android --profile preview`. Compartir el link de descarga (el README ya tiene la guía de instalación para usuario no técnico).
-- [ ] **Ícono y splash personalizados**: siguen siendo los del template de Expo. Reemplazar `assets/images/icon.png`, `android-icon-*.png` y `splash-icon.png`.
-- [ ] **Capturas de pantalla** para las tablas de placeholders del README.
+- [ ] **Generar el APK**: requiere iniciar sesión con la cuenta de Expo (`npx eas login`, es interactivo) y luego `eas build --platform android --profile preview`. Compartir el link de descarga (el README ya tiene la guía de instalación para usuario no técnico).
+- [ ] **Capturas de pantalla** para las tablas de placeholders del README (requiere emulador o dispositivo; no hay ninguno configurado en esta máquina).
 - [ ] **Probar en dispositivo real**: notificaciones de gastos fijos (recordatorio día anterior 9am), haptics, confetti al completar meta, swipe-para-eliminar.
-- [ ] El nombre del saludo del Home es la constante `USER_NAME` en `app/(tabs)/index.tsx` (hoy: "Magda").
+- [x] **Ícono y splash personalizados**: generados con `scripts/generate-icons.js` (chanchito de lucide sobre violeta `#7C6FF7`). Para regenerarlos: `npm i --no-save sharp && node scripts/generate-icons.js`.
+
+El nombre del saludo del Home es la constante `USER_NAME` en `app/(tabs)/index.tsx` (hoy: "Magda").

@@ -8,9 +8,6 @@
     "scheme": "magsave",
     "userInterfaceStyle": "light",
     "backgroundColor": "#F7F6F3",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "package": "com.magsave.app",
       "adaptiveIcon": {
