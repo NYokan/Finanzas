@@ -45,6 +45,52 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 - [ ] **Validar el rediseño completo en dispositivo** (nuevo APK): Reportes sin crash, scrolls de sheets, fuente Inter, navbar flotante sin tapar contenido.
 - [ ] **Decisión Tamagui**: descartado por ahora (reemplazaría NativeWind; el rediseño se logró sin él). Retomar solo si el usuario insiste.
+
+---
+
+# PRÓXIMA VERSIÓN (v3) — feedback de la 2ª prueba en dispositivo (12-jun-2026, build `caf74475`)
+
+## Bugs reportados y diagnosticados
+
+- [ ] **El gráfico de barras de Reportes se ve mal (overflow)**. Diagnóstico hecho: en `components/charts/MonthlyBars.tsx` el ancho del plot es `Dimensions.width − 88`, pero gifted-charts le SUMA el `yAxisLabelWidth` (42px); la Card dispone solo de `pantalla − 72` (padding 20×2 de pantalla + 16×2 de card) → el chart desborda ~26px a la derecha y corta barras/labels. **Fix**: `width = Dimensions.width − 72 − 42 − 16` (≈ `−130`) y recalcular `barWidth` con ese ancho. Verificar también con 12 meses (24 barras).
+- [ ] **Grid de Fijos: `minHeight` invertido** (encontrado en revisión de código, `app/(tabs)/fijos.tsx`): las cards grandes tienen `minHeight: 104` y las chicas `128` — debería ser al revés (grande ≥ chica).
+
+## Cambios pedidos
+
+- [ ] **Quitar los emojis de la página de metas de ahorro**: eliminar el grid de emojis y la fila de "sugeridos" del `GoalSheet`; donde estaban, dejar las opciones de TEXTO (Viaje, Emergencias, Regalo, Casa, Auto, Tecnología...). El campo `emoji` de la tabla puede seguir guardando un valor por defecto (p.ej. derivado del preset) pero la UI no muestra picker de emojis. Revisar también el protagonismo del emoji en las cards de meta del tab Ahorro.
+
+## Recomendaciones económicas (sin servicios de pago)
+
+Pedido del usuario: dar recomendaciones económicas gratis. **Enfoque elegido: motor de reglas 100% local** (calza con "sin nube, sin cuenta" y cuesta $0) — NO usar APIs de LLM (ni siquiera free tier: requieren key, internet y enviar datos financieros afuera). Ideas de reglas sobre los datos de SQLite, mostrables como cards de "Consejos" en Reportes o Home:
+
+- Comparación mes a mes por categoría: "En Comida llevas un 30% más que el mes pasado".
+- Ritmo de gasto vs presupuesto: "A este ritmo te pasas del presupuesto el día 24".
+- Proyección de metas: "Guardando $5.000 a la semana, completas 'Viaje' en marzo".
+- Peso de los fijos: "Tus gastos fijos son el 45% de tus ingresos del mes" (regla 50/30/20 como referencia).
+- Racha y refuerzo positivo: "Llevas 12 días registrando — los que registran gastan menos 😉".
+- Detección de hormiga: top 3 de gastos chicos repetidos del mes (misma nota/categoría, monto < umbral).
+
+Implementación: módulo `utils/advisor.ts` con funciones puras que reciben los agregados existentes (`getMonthlySeries`, `getExpensesByCategory`, `getBudgetSummary`, metas) y devuelven una lista de `{ icon, title, body, tone }`; UI como carrusel de cards.
+
+## Rediseño v3 — MODO CLARO + ROSA (guía del usuario, para la próxima versión)
+
+### Paleta nueva (reemplaza el tema oscuro; actualizar `constants/colors.ts` + `tailwind.config.js` en sincronía)
+- Fondo app: `#F7F7F9` o `#F2F2F6` (gris muy claro, NO blanco puro).
+- Cards: blanco puro `#FFFFFF`.
+- Tarjeta principal (gradiente rosa): `#FF9A9E` (rosa melocotón) → `#FECFEF` (rosa suave), o `#FF6A88` como final si falta contraste.
+- Textos: `#1C1C1E` (casi negro) títulos/montos; `#8E8E93` (gris medio) subtítulos/fechas.
+
+### Por componente
+- **Tarjeta de balance principal**: `LinearGradient` rosa + borde glass `borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)'`. **Glow rosa** en vez de sombra negra: `shadowColor: '#FF9A9E', shadowOpacity: 0.3, shadowRadius: 15`. Texto del balance en blanco puro.
+- **Navbar**: fondo blanco `#FFFFFF` flotante sobre el gris claro, sombra muy difusa. Íconos inactivos gris claro; el activo SOLO cambia a rosa con `weight="fill"` — **sin círculo/pastilla de fondo** (barra más limpia).
+- **Transacciones y categorías**: filas con fondo blanco, sin bordes oscuros; separación por padding generoso + sombras minúsculas (`shadowOpacity: 0.03, shadowRadius: 8` / `elevation: 1`). Círculos de íconos de categoría: fondo `#F0F0F0` con ícono oscuro o rosa.
+- **Gráficos**: track de la dona en gris tenue `#E8E8E8`; el progreso en el rosa principal. Barras de ahorro: fondo gris tenue + relleno con gradiente rosa.
+
+### Tipografía y espaciado (whitespace)
+- Margen lateral mínimo **24px** en toda pantalla.
+- Más aire vertical entre secciones: p.ej. `marginBottom: 32` bajo la tarjeta principal rosa antes de "Últimas transacciones".
+
+> Nota: este rediseño revierte el tema oscuro actual. Al implementarlo, actualizar también `app.json` (`userInterfaceStyle: "light"`, splash claro, status bar dark) y regenerar íconos/splash con el rosa si se quiere coherencia.
 - [ ] **Capturas de pantalla** para las tablas de placeholders del README (requiere emulador o dispositivo; no hay ninguno configurado en esta máquina).
 - [ ] **Probar en dispositivo real**: notificaciones de gastos fijos (recordatorio día anterior 9am), haptics, confetti al completar meta, swipe-para-eliminar.
 - [x] **Generar el APK**: hecho — proyecto EAS `@nyokan/magsave`, build preview `a784d6e3` (12-jun-2026). Para nuevos builds: `npx eas-cli build --platform android --profile preview --non-interactive --no-wait` (la sesión de `eas login` ya quedó iniciada en esta máquina).
