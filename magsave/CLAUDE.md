@@ -42,7 +42,7 @@ No hay backend y es **a propósito** (spec original: "Sin cuenta, sin nube"). To
 
 ## Rediseño front pendiente — guía paso a paso (del usuario, 12-jun-2026)
 
-> ⚠️ Nota de coherencia: la guía sugiere `lucide-react-native`, pero el usuario pidió antes migrar a **phosphor-react-native** (ya hecho). Confirmar con él antes de volver a lucide; mientras tanto, mantener phosphor (sus íconos también son minimalistas y redondeados).
+> Nota: la primera versión de la guía mencionaba lucide, pero el usuario confirmó después (su ejemplo del navbar usa Phosphor con `weight`) — **se mantiene phosphor-react-native**.
 
 ### 1. Librerías a instalar/usar
 - `expo-linear-gradient` — tarjetas con gradientes de color.
@@ -72,3 +72,36 @@ No hay backend y es **a propósito** (spec original: "Sin cuenta, sin nube"). To
 **Gastos/Transacciones** — `app/(tabs)/gastos.tsx`:
 - Usar `SectionList` (no FlatList/map) para los encabezados de grupo tipo "This Month" / "Last Month" de forma nativa.
 - En `renderItem`, instanciar `TransactionRow`.
+
+### 5. Detalle adicional del usuario (segunda entrega de la guía)
+
+**Navbar flotante (tab bar)** — en `app/(tabs)/_layout.tsx`, vía `screenOptions`:
+- `tabBarShowLabel: false` (solo íconos).
+- `tabBarStyle`: `position: 'absolute'`, `bottom: 25`, `left: 20`, `right: 20`, `height: 70`, `borderRadius: 40`, `backgroundColor: '#1E1E24'` (o BlurView), `borderTopWidth: 0`, `elevation: 0`, sombra iOS suave (`shadowOpacity: 0.2`, `shadowRadius: 10`).
+- `tabBarIcon`: envolver el ícono Phosphor en un `<View>` que, si está `focused`, tiene `backgroundColor: '#7F56D9'`, `padding: 12`, `borderRadius: 24` (la "pastilla" circular activa); ícono blanco + `weight="fill"` activo, gris `#8E8E93` + `regular` inactivo.
+
+**`<GlassMetricCard />`** (tarjetas Housing/Food/Saving):
+- `<View>` con `borderRadius: 24`, padding ~16, `overflow: 'hidden'`.
+- Fondo `LinearGradient` (la morada: morado medio → azul oscuro/negro en diagonal).
+- Borde glass: `borderWidth: 1`, `borderColor: 'rgba(255,255,255,0.1)'`.
+- Contenido: ícono Phosphor pequeño arriba-izquierda, título en `#A0A0A0`, monto blanco bold, badge/píldora con porcentaje abajo-derecha.
+
+**`<TransactionItem />`** (refactor del actual):
+- Fila `flexDirection: 'row'`, `justifyContent: 'space-between'`, `alignItems: 'center'`, `marginBottom: 16`.
+- Izquierda: círculo 48×48 (`borderRadius: 24`) fondo `#2A2A30` con el ícono Phosphor al centro; al lado columna con título blanco + subtítulo (fecha/hora) gris.
+- Derecha: monto en blanco alineado a la derecha.
+
+**`<BalanceHeader />`**:
+- Recibe el monto total; `fontSize: 48`, `fontWeight: 'bold'`, blanco. Botón pequeño de filtro al lado (3 puntos o sliders).
+
+**Home (`index.tsx`) — orden de secciones:**
+1. Saludo: fila con foto de perfil circular + "Hi, Magda"; botón de notificaciones al extremo derecho.
+2. Resumen: `<BalanceHeader />` ("Planned Expenses" + monto); a la derecha, gráfico de dona (react-native-svg con `strokeDasharray` o librería).
+3. Scroll horizontal de `<GlassMetricCard />`.
+4. Dos bloques lado a lado (`flex: 1` + gap) "Salary"/"Interest" con íconos tenues de fondo.
+- Todo envuelto en `SafeAreaView` con `backgroundColor: '#121212'`.
+
+**Gastos (`gastos.tsx`):**
+- Arriba: botón atrás (`CaretLeft`) + título centrado; debajo `<BalanceHeader />` con el balance.
+- `<SectionList />` con secciones por período ("This Month"/"Last Month"); `renderSectionHeader` con título del mes (+ línea separadora opcional); `renderItem` → `<TransactionItem />`. Reemplaza el empty state actual.
+- **Espaciado clave:** `contentContainerStyle={{ paddingBottom: 100 }}` en todas las listas para que el navbar flotante no tape el último ítem.
