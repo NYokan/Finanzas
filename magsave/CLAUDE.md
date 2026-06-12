@@ -22,11 +22,26 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Bugs conocidos
 
-- [ ] **CRASH: el tab Reportes se cae en el APK** (reportado por el usuario en un Galaxy S25, build `a784d6e3`). Sospechosos principales: `components/charts/MonthlyBars.tsx` / `CategoryPie.tsx` (victory-native v36 con React 19 / datos vacíos en `VictoryGroup`). Reproducir con datos vacíos y con datos; revisar logcat o `adb logcat` si hay dispositivo. Prioridad alta — investigar antes del rediseño o como parte de él (el rediseño cambia la librería de charts, ver abajo).
+(Feedback de la primera prueba en dispositivo real — Galaxy S25, build `a784d6e3`, 12-jun-2026)
+
+- [ ] **CRASH: el tab Reportes se cae en el APK**. Sospechosos principales: `components/charts/MonthlyBars.tsx` / `CategoryPie.tsx` (victory-native v36 con React 19 / datos vacíos en `VictoryGroup`). Reproducir con datos vacíos y con datos; revisar logcat o `adb logcat` si hay dispositivo. Prioridad alta — el rediseño cambia la librería de charts, lo que probablemente lo resuelve de paso.
+- [ ] **El scroll horizontal de categorías NO funciona dentro del sheet de nueva transacción** (`components/sheets/TransactionSheet.tsx`). Causa probable: conflicto de gestos entre el `ScrollView` horizontal de react-native y el pan del bottom sheet — usar `BottomSheetScrollView` (o los componentes de scroll de @gorhom) en TODOS los sheets que tengan scroll interno (TransactionSheet, FixedExpenseSheet también).
+- [ ] **El filtro por categoría en Gastos no filtra bien**: al seleccionar "Comida" deben aparecer SOLO las transacciones con esa etiqueta. Verificar `useTransactionsByMonth` + chips en `app/(tabs)/gastos.tsx`.
+- [ ] **Un ingreso agregado desde el Inicio aparece como gasto / aparece en la lista de Gastos**: revisar que el `type` se propague bien desde `AddActionSheet` → `TransactionSheet`, y decidir el comportamiento de la lista del tab Gastos (hoy mezcla gastos e ingresos bajo el título "Total gastado" — confunde; mostrar solo gastos, o separar visualmente los ingresos).
+
+## Mejoras pedidas por el usuario (primera prueba, 12-jun-2026)
+
+- [ ] **Home**: la card "Disponible este mes" debería decir/centrarse en **"Presupuesto"** y mejorar su diseño (alinear con el `BalanceHeader` del rediseño).
+- [ ] **TransactionSheet**: sugerir nombres/notas según la categoría elegida (ej. Comida → "Supermercado", "Almuerzo"...).
+- [ ] **Fijos — selector de día**: reemplazar los números "así nomás" (pills 1-31) por la opción de **calendario**, igual que en el formulario de gastos del Inicio (`@react-native-community/datetimepicker`).
+- [ ] **Fijos — vista grid**: mostrar los gastos fijos en **formato grid donde los recuadros más grandes sean los de mayor monto** (estilo treemap).
+- [ ] **Fijos — estado pagado**: al presionar y confirmar el pago, el ítem debe verse **"desactivado"** (atenuado/dimmed) en vez de solo cambiar el badge. Mantener confirmación al marcar como pagado.
+- [ ] **Metas de ahorro — sugerencias**: ofrecer ~6 opciones básicas predefinidas en texto (ej. Viaje, Emergencias, Regalo, Casa, Auto, Tecnología) y **sugerir emojis según el nombre escrito** (ej. "viaje a españa" → ✈️ 🇪🇸) para hacerlo más entretenido. Implementable con un diccionario local de palabras clave → emojis.
 
 ## Pendientes
 
 - [ ] **Rediseño del front** según la guía del usuario (sección siguiente). Incluye reemplazar victory-native por `react-native-gifted-charts` o SVG propio — eso probablemente resuelve también el crash de Reportes.
+- [ ] **Decisión pendiente — Tamagui**: el usuario preguntó si integrarlo. Consideración: la app ya usa NativeWind v4; Tamagui es un sistema de estilos/UI completo que lo REEMPLAZARÍA (no conviven bien: ambos pelean por el Babel pipeline y duplican el sistema de theming). El rediseño pedido (gradientes, blur, navbar flotante) se logra con NativeWind + expo-linear-gradient + expo-blur sin migración. Si el usuario confirma Tamagui, es un refactor grande de TODOS los estilos — confirmar antes de empezar.
 - [ ] **Capturas de pantalla** para las tablas de placeholders del README (requiere emulador o dispositivo; no hay ninguno configurado en esta máquina).
 - [ ] **Probar en dispositivo real**: notificaciones de gastos fijos (recordatorio día anterior 9am), haptics, confetti al completar meta, swipe-para-eliminar.
 - [x] **Generar el APK**: hecho — proyecto EAS `@nyokan/magsave`, build preview `a784d6e3` (12-jun-2026). Para nuevos builds: `npx eas-cli build --platform android --profile preview --non-interactive --no-wait` (la sesión de `eas login` ya quedó iniciada en esta máquina).
