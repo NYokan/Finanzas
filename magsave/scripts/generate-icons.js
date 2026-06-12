@@ -55,8 +55,8 @@ async function main() {
     piggySvg({ size: 1024, color: WHITE, scale: 0.46 }),
   );
 
-  // Splash: chanchito violeta sobre transparente (el fondo crema lo pone app.json)
-  await write('splash-icon.png', piggySvg({ size: 512, color: VIOLET, scale: 0.85 }));
+  // Splash: chanchito blanco sobre transparente (el fondo oscuro lo pone app.json)
+  await write('splash-icon.png', piggySvg({ size: 512, color: WHITE, scale: 0.85 }));
 
   // Favicon (web)
   await write(

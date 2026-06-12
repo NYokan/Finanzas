@@ -6,8 +6,8 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "magsave",
-    "userInterfaceStyle": "light",
-    "backgroundColor": "#F7F6F3",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0E0E10",
     "android": {
       "package": "com.magsave.app",
       "adaptiveIcon": {
@@ -27,7 +27,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F7F6F3",
+          "backgroundColor": "#0E0E10",
           "android": {
             "image": "./assets/images/splash-icon.png",
             "imageWidth": 120

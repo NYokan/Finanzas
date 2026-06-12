@@ -48,13 +48,13 @@ const SLIDES: Slide[] = [
     subtitle: 'Registra gastos, controla lo fijo y guarda para lo que importa',
     illustration: (
       <View className="flex-row gap-4">
-        <IconBubble bg="#FBEAE3">
+        <IconBubble bg={colors.dangerDim}>
           <Receipt size={40} color={colors.danger} />
         </IconBubble>
         <IconBubble bg={colors.primaryDim}>
           <Repeat size={40} color={colors.primary} />
         </IconBubble>
-        <IconBubble bg="#E4F4EE">
+        <IconBubble bg={colors.successDim}>
           <PiggyBank size={40} color={colors.success} />
         </IconBubble>
       </View>
@@ -68,7 +68,7 @@ const SLIDES: Slide[] = [
         <IconBubble bg={colors.primaryDim}>
           <Lock size={40} color={colors.primary} />
         </IconBubble>
-        <IconBubble bg="#FBEAE3">
+        <IconBubble bg={colors.dangerDim}>
           <Heart size={40} color={colors.danger} />
         </IconBubble>
       </View>

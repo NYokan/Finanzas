@@ -87,7 +87,7 @@ export default function AhorroScreen() {
                     className="active:opacity-70">
                     <Card
                       style={{
-                        backgroundColor: completed ? '#E4F4EE' : colors.surface,
+                        backgroundColor: completed ? colors.successDim : colors.surface,
                       }}>
                       <Text className="text-4xl">{goal.emoji}</Text>
                       <Text

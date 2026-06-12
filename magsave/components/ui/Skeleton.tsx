@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Animated, type DimensionValue } from 'react-native';
 
+import { colors } from '@/constants/colors';
+
 interface Props {
   width?: DimensionValue;
   height?: number;
@@ -26,7 +28,7 @@ export function Skeleton({ width = '100%', height = 16, radius = 8, style }: Pro
   return (
     <Animated.View
       style={[
-        { width, height, borderRadius: radius, backgroundColor: '#E8E6E0', opacity },
+        { width, height, borderRadius: radius, backgroundColor: colors.border, opacity },
         style,
       ]}
     />

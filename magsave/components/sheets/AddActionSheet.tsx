@@ -41,7 +41,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
           <Pressable
             onPress={() => choose('expense')}
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
-            style={{ backgroundColor: '#FBEAE3' }}>
+            style={{ backgroundColor: colors.dangerDim }}>
             <TrendDown size={36} color={colors.danger} />
             <Text className="mt-3 text-base font-semibold text-text-primary">
               Agregar gasto
@@ -50,7 +50,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
           <Pressable
             onPress={() => choose('income')}
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
-            style={{ backgroundColor: '#E4F4EE' }}>
+            style={{ backgroundColor: colors.successDim }}>
             <TrendUp size={36} color={colors.success} />
             <Text className="mt-3 text-base font-semibold text-text-primary">
               Agregar ingreso

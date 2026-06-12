@@ -132,7 +132,7 @@ export default function FijosScreen() {
                   <View className="mt-3">
                     <ProgressBar
                       progress={list.length ? paidCount / list.length : 0}
-                      color={colors.success}
+                      color={colors.accent}
                     />
                   </View>
                   <Text className="mt-2 text-sm text-text-secondary">
