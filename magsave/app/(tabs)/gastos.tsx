@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react-native';
+import { CaretLeft, CaretRight, Trash } from 'phosphor-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -107,7 +107,7 @@ export default function GastosScreen() {
             onPress={() => setMonthYear(shiftMonthYear(monthYear, -1))}
             hitSlop={10}
             className="rounded-full bg-surface p-2">
-            <ChevronLeft size={22} color={colors.textPrimary} />
+            <CaretLeft size={22} color={colors.textPrimary} />
           </Pressable>
           <Text className="text-xl font-semibold capitalize text-text-primary">
             {monthYearLabel(monthYear)}
@@ -116,7 +116,7 @@ export default function GastosScreen() {
             onPress={() => setMonthYear(shiftMonthYear(monthYear, 1))}
             hitSlop={10}
             className="rounded-full bg-surface p-2">
-            <ChevronRight size={22} color={colors.textPrimary} />
+            <CaretRight size={22} color={colors.textPrimary} />
           </Pressable>
         </View>
 
@@ -191,7 +191,7 @@ export default function GastosScreen() {
                           onPress={() => confirmDelete(tx)}
                           className="my-1 ml-2 items-center justify-center rounded-pill px-5"
                           style={{ backgroundColor: colors.danger }}>
-                          <Trash2 size={20} color="#FFFFFF" />
+                          <Trash size={20} color="#FFFFFF" />
                         </Pressable>
                       )}>
                       <TransactionItem

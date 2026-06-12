@@ -2,25 +2,25 @@ import {
   BookOpen,
   Briefcase,
   Bus,
-  Clapperboard,
+  FilmSlate,
   Gift,
   House,
   PawPrint,
   Pill,
   Pizza,
-  Shirt,
-  type LucideIcon,
-} from 'lucide-react-native';
+  TShirt,
+  type Icon,
+} from 'phosphor-react-native';
 import { View } from 'react-native';
 
 // Registro de íconos lucide usados por las categorías (ver db/seed.ts)
-const ICONS: Record<string, LucideIcon> = {
+const ICONS: Record<string, Icon> = {
   Pizza,
   Bus,
   House,
   Pill,
-  Clapperboard,
-  Shirt,
+  FilmSlate,
+  TShirt,
   PawPrint,
   BookOpen,
   Briefcase,
@@ -48,7 +48,7 @@ export function CategoryIcon({ icon, color, size = 40 }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Icon size={size * 0.52} color={color} strokeWidth={2.2} />
+      <Icon size={size * 0.52} color={color} weight="duotone" />
     </View>
   );
 }

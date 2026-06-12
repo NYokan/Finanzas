@@ -1,11 +1,11 @@
 import { Tabs } from 'expo-router';
 import {
-  ChartColumn,
+  ChartBar,
   House,
   PiggyBank,
   Receipt,
   Repeat,
-} from 'lucide-react-native';
+} from 'phosphor-react-native';
 
 import { colors } from '@/constants/colors';
 
@@ -27,35 +27,45 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Inicio',
-          tabBarIcon: ({ color, size }) => <House color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <House color={String(color)} size={size} weight={focused ? 'fill' : 'regular'} />
+          ),
         }}
       />
       <Tabs.Screen
         name="gastos"
         options={{
           title: 'Gastos',
-          tabBarIcon: ({ color, size }) => <Receipt color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Receipt color={String(color)} size={size} weight={focused ? 'fill' : 'regular'} />
+          ),
         }}
       />
       <Tabs.Screen
         name="fijos"
         options={{
           title: 'Fijos',
-          tabBarIcon: ({ color, size }) => <Repeat color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Repeat color={String(color)} size={size} weight={focused ? 'fill' : 'regular'} />
+          ),
         }}
       />
       <Tabs.Screen
         name="ahorro"
         options={{
           title: 'Ahorro',
-          tabBarIcon: ({ color, size }) => <PiggyBank color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <PiggyBank color={String(color)} size={size} weight={focused ? 'fill' : 'regular'} />
+          ),
         }}
       />
       <Tabs.Screen
         name="reportes"
         options={{
           title: 'Reportes',
-          tabBarIcon: ({ color, size }) => <ChartColumn color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <ChartBar color={String(color)} size={size} weight={focused ? 'fill' : 'regular'} />
+          ),
         }}
       />
     </Tabs>

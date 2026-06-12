@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { Pencil, Plus, Trash2 } from 'lucide-react-native';
+import { Pencil, Plus, Trash } from 'phosphor-react-native';
 import { useRef } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -179,7 +179,7 @@ export default function FijosScreen() {
                           onPress={() => confirmDelete(item)}
                           className="my-1 ml-2 items-center justify-center rounded-pill px-4"
                           style={{ backgroundColor: colors.danger }}>
-                          <Trash2 size={18} color="#FFFFFF" />
+                          <Trash size={18} color="#FFFFFF" />
                         </Pressable>
                       </View>
                     )}>
@@ -227,7 +227,7 @@ export default function FijosScreen() {
           shadow,
           { bottom: 24, alignSelf: 'center', backgroundColor: colors.primary },
         ]}>
-        <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
+        <Plus size={20} color="#FFFFFF" weight="bold" />
         <Text className="text-base font-semibold text-white">Agregar fijo</Text>
       </Pressable>
 

@@ -3,7 +3,7 @@ import {
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { Pencil, Trash2 } from 'lucide-react-native';
+import { Pencil, Trash } from 'phosphor-react-native';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 
@@ -120,7 +120,7 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
         {/* Encabezado con acciones */}
         <View className="flex-row items-center justify-between">
           <Pressable onPress={confirmDelete} hitSlop={8} className="p-1">
-            <Trash2 size={20} color={colors.textSecondary} />
+            <Trash size={20} color={colors.textSecondary} />
           </Pressable>
           <Text className="text-5xl">{goal.emoji}</Text>
           <Pressable

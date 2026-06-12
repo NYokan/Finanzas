@@ -6,7 +6,7 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
-import { Calendar, X } from 'lucide-react-native';
+import { Calendar, X } from 'phosphor-react-native';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 

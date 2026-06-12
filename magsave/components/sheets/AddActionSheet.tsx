@@ -1,6 +1,6 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { TrendingDown, TrendingUp } from 'lucide-react-native';
+import { TrendDown, TrendUp } from 'phosphor-react-native';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -42,7 +42,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
             onPress={() => choose('expense')}
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
             style={{ backgroundColor: '#FBEAE3' }}>
-            <TrendingDown size={36} color={colors.danger} />
+            <TrendDown size={36} color={colors.danger} />
             <Text className="mt-3 text-base font-semibold text-text-primary">
               Agregar gasto
             </Text>
@@ -51,7 +51,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
             onPress={() => choose('income')}
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
             style={{ backgroundColor: '#E4F4EE' }}>
-            <TrendingUp size={36} color={colors.success} />
+            <TrendUp size={36} color={colors.success} />
             <Text className="mt-3 text-base font-semibold text-text-primary">
               Agregar ingreso
             </Text>

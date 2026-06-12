@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react-native';
+import { Pencil } from 'phosphor-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

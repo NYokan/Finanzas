@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Plus, TriangleAlert } from 'lucide-react-native';
+import { Plus, Warning } from 'phosphor-react-native';
 import { useRef } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -107,7 +107,7 @@ export default function HomeScreen() {
             <Skeleton width={180} height={40} style={{ marginTop: 8 }} />
           ) : (
             <View className="mt-1 flex-row items-center gap-2">
-              {available < 0 && <TriangleAlert size={28} color={colors.danger} />}
+              {available < 0 && <Warning size={28} color={colors.danger} />}
               <Text
                 className="text-[40px] font-bold"
                 style={{ color: available < 0 ? colors.danger : colors.textPrimary }}>
@@ -241,7 +241,7 @@ export default function HomeScreen() {
             backgroundColor: colors.primary,
           },
         ]}>
-        <Plus size={30} color="#FFFFFF" strokeWidth={2.5} />
+        <Plus size={30} color="#FFFFFF" weight="bold" />
       </Pressable>
 
       <AddActionSheet

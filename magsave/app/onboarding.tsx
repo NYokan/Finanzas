@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Heart, Lock, PiggyBank, Receipt, Repeat } from 'lucide-react-native';
+import { Heart, Lock, PiggyBank, Receipt, Repeat } from 'phosphor-react-native';
 import { useRef, useState, type ReactNode } from 'react';
 import {
   Dimensions,

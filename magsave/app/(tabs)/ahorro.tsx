@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react-native';
+import { Plus } from 'phosphor-react-native';
 import { useRef, useState } from 'react';
 import { Dimensions, Pressable, ScrollView, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -133,7 +133,7 @@ export default function AhorroScreen() {
           shadow,
           { bottom: 24, alignSelf: 'center', backgroundColor: colors.primary },
         ]}>
-        <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
+        <Plus size={20} color="#FFFFFF" weight="bold" />
         <Text className="text-base font-semibold text-white">Nueva meta</Text>
       </Pressable>
 

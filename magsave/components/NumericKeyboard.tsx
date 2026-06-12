@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { Delete } from 'lucide-react-native';
+import { Backspace } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { colors } from '@/constants/colors';
@@ -54,7 +54,7 @@ export function NumericKeyboard({ value, onChange, maxIntegerDigits = 9 }: Props
               backgroundColor: key === 'del' ? colors.primaryDim : colors.bg,
             }}>
             {key === 'del' ? (
-              <Delete size={26} color={colors.primary} />
+              <Backspace size={26} color={colors.primary} />
             ) : (
               <Text className="text-2xl font-semibold text-text-primary">
                 {key}
