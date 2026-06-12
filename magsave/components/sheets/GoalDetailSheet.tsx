@@ -122,7 +122,7 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
           <Pressable onPress={confirmDelete} hitSlop={8} className="p-1">
             <Trash size={20} color={colors.textSecondary} />
           </Pressable>
-          <Text className="text-5xl">{goal.emoji}</Text>
+          <Text className="font-sans text-5xl">{goal.emoji}</Text>
           <Pressable
             onPress={() => {
               sheetRef.current?.dismiss();
@@ -133,7 +133,7 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
             <Pencil size={20} color={colors.textSecondary} />
           </Pressable>
         </View>
-        <Text className="mt-2 text-center text-xl font-semibold text-text-primary">
+        <Text className="font-sans mt-2 text-center text-xl font-semibold text-text-primary">
           {goal.name}
         </Text>
 
@@ -141,15 +141,15 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
         <View className="mt-3">
           <ProgressBar progress={progress} height={12} />
           <View className="mt-2 flex-row justify-between">
-            <Text className="text-sm text-text-secondary">
+            <Text className="font-sans text-sm text-text-secondary">
               {formatMoney(goal.saved)} de {formatMoney(goal.targetAmount)}
             </Text>
-            <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+            <Text className="font-sans text-sm font-semibold" style={{ color: colors.primary }}>
               {Math.round(progress * 100)}%
             </Text>
           </View>
           {remaining > 0 && (
-            <Text className="mt-1 text-sm text-text-secondary">
+            <Text className="font-sans mt-1 text-sm text-text-secondary">
               Te faltan {formatMoney(remaining)} 💪
             </Text>
           )}
@@ -159,7 +159,7 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
           <>
             {/* Formulario de aporte */}
             <View className="items-center py-2">
-              <Text style={{ fontSize: 40, fontWeight: '700', color: colors.success }}>
+              <Text className="font-sans" style={{ fontSize: 40, fontWeight: '700', color: colors.success }}>
                 {amount === ''
                   ? '$0'
                   : `$${amount.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`}
@@ -190,11 +190,11 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
         ) : (
           <>
             {/* Historial de aportes */}
-            <Text className="mb-1 mt-4 text-sm font-semibold text-text-secondary">
+            <Text className="font-sans mb-1 mt-4 text-sm font-semibold text-text-secondary">
               Historial de aportes
             </Text>
             {(contributions ?? []).length === 0 ? (
-              <Text className="py-3 text-center text-sm text-text-secondary">
+              <Text className="font-sans py-3 text-center text-sm text-text-secondary">
                 Todavía no hay aportes. ¡El primero es el que cuenta! ✨
               </Text>
             ) : (
@@ -204,17 +204,17 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
                     key={c.id}
                     className="flex-row items-center justify-between border-b border-line py-2.5">
                     <View className="flex-1 pr-2">
-                      <Text className="text-sm text-text-primary">
+                      <Text className="font-sans text-sm text-text-primary">
                         {relativeDateLabel(c.date)}
                       </Text>
                       {c.note ? (
-                        <Text className="text-xs text-text-secondary" numberOfLines={1}>
+                        <Text className="font-sans text-xs text-text-secondary" numberOfLines={1}>
                           {c.note}
                         </Text>
                       ) : null}
                     </View>
                     <Text
-                      className="text-base font-semibold"
+                      className="font-sans text-base font-semibold"
                       style={{ color: colors.success }}>
                       +{formatMoney(c.amount)}
                     </Text>

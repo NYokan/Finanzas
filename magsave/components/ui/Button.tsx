@@ -40,7 +40,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={fg} />
       ) : (
-        <Text className="text-base font-semibold" style={{ color: fg }}>
+        <Text className="font-sans text-base font-semibold" style={{ color: fg }}>
           {label}
         </Text>
       )}

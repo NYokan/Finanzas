@@ -2,9 +2,14 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
+import { Calendar } from 'phosphor-react-native';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { NumericKeyboard } from '@/components/NumericKeyboard';
@@ -20,8 +25,6 @@ export interface FixedExpenseSheetRef {
   open: (expense?: FixedExpense) => void;
 }
 
-const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
-
 /** Alta y edición de gastos fijos mensuales. */
 export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
   (_props, ref) => {
@@ -31,6 +34,7 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
     const [amount, setAmount] = useState('');
     const [dayOfMonth, setDayOfMonth] = useState(1);
     const [categoryId, setCategoryId] = useState<number | null>(null);
+    const [showDayPicker, setShowDayPicker] = useState(false);
     const [saving, setSaving] = useState(false);
 
     const { data: categories } = useCategoriesForType('expense');
@@ -40,11 +44,26 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
         setEditingId(expense?.id ?? null);
         setName(expense?.name ?? '');
         setAmount(expense ? String(expense.amount) : '');
-        setDayOfMonth(expense?.dayOfMonth ?? 1);
+        setDayOfMonth(expense?.dayOfMonth ?? new Date().getDate());
         setCategoryId(expense?.categoryId ?? null);
+        setShowDayPicker(false);
         sheetRef.current?.present();
       },
     }));
+
+    // Se elige una fecha en el calendario y se usa solo el día del mes
+    const onDayChange = (event: DateTimePickerEvent, selected?: Date) => {
+      setShowDayPicker(false);
+      if (event.type === 'set' && selected) {
+        Haptics.selectionAsync();
+        setDayOfMonth(selected.getDate());
+      }
+    };
+
+    const pickerValue = () => {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), dayOfMonth);
+    };
 
     const save = async () => {
       const parsed = parseFloat(amount);
@@ -80,7 +99,7 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
 
     return (
       <AppSheet ref={sheetRef}>
-        <Text className="mb-3 mt-1 text-center text-xl font-semibold text-text-primary">
+        <Text className="font-sans mb-3 mt-1 text-center text-xl font-semibold text-text-primary">
           {editingId ? 'Editar gasto fijo' : 'Nuevo gasto fijo'}
         </Text>
 
@@ -95,48 +114,36 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
             paddingHorizontal: 14,
             paddingVertical: 11,
             fontSize: 15,
+            fontFamily: 'Inter',
             color: colors.textPrimary,
           }}
         />
 
-        <View className="items-center py-2">
-          <Text style={{ fontSize: 36, fontWeight: '700', color: colors.textPrimary }}>
+        <View className="flex-row items-center justify-between py-2">
+          <Text
+            className="font-sans"
+            style={{ fontSize: 34, fontWeight: '700', color: colors.textPrimary }}>
             {amount === '' ? '$0' : `$${amount.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`}
           </Text>
+          {/* Día de vencimiento con calendario */}
+          <Pressable
+            onPress={() => setShowDayPicker(true)}
+            className="flex-row items-center gap-1.5 rounded-pill px-3 py-2.5"
+            style={{ backgroundColor: colors.primaryDim }}>
+            <Calendar size={16} color={colors.primaryLight} />
+            <Text
+              className="font-sans text-sm font-medium"
+              style={{ color: colors.primaryLight }}>
+              Día {dayOfMonth} de cada mes
+            </Text>
+          </Pressable>
         </View>
-
-        {/* Día del mes (picker 1-31) */}
-        <Text className="mb-1.5 text-sm font-medium text-text-secondary">
-          Día de cada mes
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 6 }}>
-          {DAYS.map((day) => (
-            <Pressable
-              key={day}
-              onPress={() => {
-                Haptics.selectionAsync();
-                setDayOfMonth(day);
-              }}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: dayOfMonth === day ? colors.primary : colors.bg,
-              }}>
-              <Text
-                className="text-sm font-semibold"
-                style={{
-                  color: dayOfMonth === day ? '#FFFFFF' : colors.textPrimary,
-                }}>
-                {day}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        {showDayPicker && (
+          <DateTimePicker value={pickerValue()} mode="date" onChange={onDayChange} />
+        )}
 
         {/* Categoría */}
-        <Text className="mb-1.5 mt-3 text-sm font-medium text-text-secondary">
+        <Text className="font-sans mb-1.5 text-sm font-medium text-text-secondary">
           Categoría
         </Text>
         <ScrollView
@@ -155,7 +162,7 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
               <CategoryIcon icon={cat.icon} color={cat.color} size={40} />
               <Text
                 numberOfLines={1}
-                className="mt-1 text-xs"
+                className="font-sans mt-1 text-xs"
                 style={{ color: colors.textSecondary }}>
                 {cat.name}
               </Text>

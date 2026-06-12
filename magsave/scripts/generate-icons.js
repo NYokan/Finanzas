@@ -12,7 +12,7 @@ const sharp = require('sharp');
 
 const OUT = path.join(__dirname, '..', 'assets', 'images');
 
-const VIOLET = '#7C6FF7';
+const VIOLET = '#7F56D9';
 const WHITE = '#FFFFFF';
 
 // Path del ícono piggy-bank de Phosphor, peso "fill" (viewBox 256x256)

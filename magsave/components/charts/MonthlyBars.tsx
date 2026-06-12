@@ -1,5 +1,5 @@
 import { Dimensions, Text, View } from 'react-native';
-import { VictoryAxis, VictoryBar, VictoryChart, VictoryGroup } from 'victory-native';
+import { BarChart, type barDataItem } from 'react-native-gifted-charts';
 
 import { colors } from '@/constants/colors';
 import type { MonthlySeriesPoint } from '@/db/queries/transactions';
@@ -10,63 +10,76 @@ interface Props {
   data: MonthlySeriesPoint[];
 }
 
-/** Barras agrupadas de ingresos (verde) vs gastos (coral) por mes. */
+/** Barras agrupadas de ingresos (verde) vs gastos (coral) por mes — gifted-charts. */
 export function MonthlyBars({ data }: Props) {
-  const width = Dimensions.get('window').width - 56;
-  const showLabels = data.length <= 6;
+  const width = Dimensions.get('window').width - 88;
+  const groups = data.length || 1;
+  // dos barras por mes + espacio del grupo
+  const barWidth = Math.max(5, Math.floor(width / groups / 2) - 9);
 
-  const income = data.map((d) => ({ x: monthShortLabel(d.monthYear), y: d.income }));
-  const expense = data.map((d) => ({ x: monthShortLabel(d.monthYear), y: d.expense }));
+  const bars: barDataItem[] = data.flatMap((d) => [
+    {
+      value: d.income,
+      frontColor: colors.success,
+      spacing: 3,
+      label: monthShortLabel(d.monthYear),
+      labelWidth: barWidth * 2 + 6,
+      labelTextStyle: {
+        color: colors.textSecondary,
+        fontSize: 10,
+        fontFamily: 'Inter',
+      },
+    },
+    {
+      value: d.expense,
+      frontColor: colors.danger,
+      spacing: 16,
+    },
+  ]);
+
+  const maxValue = Math.max(...data.map((d) => Math.max(d.income, d.expense)), 1);
 
   return (
     <View>
-      <VictoryChart
+      <BarChart
+        data={bars}
         width={width}
-        height={240}
-        domainPadding={{ x: data.length <= 3 ? 50 : 24, y: 20 }}
-        padding={{ top: 24, bottom: 36, left: 16, right: 16 }}>
-        <VictoryAxis
-          style={{
-            axis: { stroke: colors.border },
-            tickLabels: {
-              fill: colors.textSecondary,
-              fontSize: 11,
-              angle: data.length > 6 ? -35 : 0,
-            },
-          }}
-        />
-        <VictoryGroup
-          offset={data.length > 6 ? 7 : 16}
-          colorScale={[colors.success, colors.danger]}>
-          <VictoryBar
-            data={income}
-            barWidth={data.length > 6 ? 6 : 14}
-            cornerRadius={{ top: 3 }}
-            labels={showLabels ? ({ datum }) => (datum.y > 0 ? abbreviateMoney(datum.y) : '') : undefined}
-            style={{ labels: { fontSize: 9, fill: colors.success } }}
-          />
-          <VictoryBar
-            data={expense}
-            barWidth={data.length > 6 ? 6 : 14}
-            cornerRadius={{ top: 3 }}
-            labels={showLabels ? ({ datum }) => (datum.y > 0 ? abbreviateMoney(datum.y) : '') : undefined}
-            style={{ labels: { fontSize: 9, fill: colors.danger } }}
-          />
-        </VictoryGroup>
-      </VictoryChart>
+        height={190}
+        barWidth={barWidth}
+        barBorderTopLeftRadius={3}
+        barBorderTopRightRadius={3}
+        initialSpacing={8}
+        endSpacing={0}
+        noOfSections={4}
+        maxValue={maxValue * 1.15}
+        yAxisThickness={0}
+        xAxisThickness={1}
+        xAxisColor={colors.border}
+        rulesColor={colors.border}
+        rulesType="solid"
+        yAxisTextStyle={{
+          color: colors.textSecondary,
+          fontSize: 9,
+          fontFamily: 'Inter',
+        }}
+        formatYLabel={(label: string) => abbreviateMoney(Number(label))}
+        yAxisLabelWidth={42}
+        isAnimated={false}
+        disablePress
+      />
       {/* Leyenda */}
-      <View className="flex-row justify-center gap-5">
+      <View className="mt-2 flex-row justify-center gap-5">
         <View className="flex-row items-center gap-1.5">
           <View
             style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors.success }}
           />
-          <Text className="text-xs text-text-secondary">Ingresos</Text>
+          <Text className="font-sans text-xs text-text-secondary">Ingresos</Text>
         </View>
         <View className="flex-row items-center gap-1.5">
           <View
             style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors.danger }}
           />
-          <Text className="text-xs text-text-secondary">Gastos</Text>
+          <Text className="font-sans text-xs text-text-secondary">Gastos</Text>
         </View>
       </View>
     </View>

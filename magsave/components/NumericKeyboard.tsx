@@ -56,7 +56,7 @@ export function NumericKeyboard({ value, onChange, maxIntegerDigits = 9 }: Props
             {key === 'del' ? (
               <Backspace size={26} color={colors.primary} />
             ) : (
-              <Text className="text-2xl font-semibold text-text-primary">
+              <Text className="font-sans text-2xl font-semibold text-text-primary">
                 {key}
               </Text>
             )}

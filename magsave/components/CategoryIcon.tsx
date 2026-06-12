@@ -13,7 +13,7 @@ import {
 } from 'phosphor-react-native';
 import { View } from 'react-native';
 
-// Registro de íconos lucide usados por las categorías (ver db/seed.ts)
+// Registro de íconos phosphor usados por las categorías (ver db/seed.ts)
 const ICONS: Record<string, Icon> = {
   Pizza,
   Bus,
@@ -27,28 +27,35 @@ const ICONS: Record<string, Icon> = {
   Gift,
 };
 
+/** Componente phosphor de una categoría, para usar fuera del círculo. */
+export function categoryIconComponent(icon: string): Icon {
+  return ICONS[icon] ?? Gift;
+}
+
 interface Props {
   /** nombre PascalCase guardado en categories.icon */
   icon: string;
   /** color de la categoría (hex) */
   color: string;
   size?: number;
+  /** fondo del círculo; por defecto el color de la categoría tenue */
+  bgColor?: string;
 }
 
-/** Ícono de categoría dentro de un círculo con el color de la categoría. */
-export function CategoryIcon({ icon, color, size = 40 }: Props) {
-  const Icon = ICONS[icon] ?? Gift;
+/** Ícono de categoría dentro de un círculo. */
+export function CategoryIcon({ icon, color, size = 40, bgColor }: Props) {
+  const IconComponent = ICONS[icon] ?? Gift;
   return (
     <View
       style={{
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: `${color}22`,
+        backgroundColor: bgColor ?? `${color}22`,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Icon size={size * 0.52} color={color} weight="duotone" />
+      <IconComponent size={size * 0.5} color={color} weight="duotone" />
     </View>
   );
 }

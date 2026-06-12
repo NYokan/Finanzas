@@ -20,7 +20,7 @@ export function Pill({ label, selected = false, onPress, color = colors.primary 
         borderColor: selected ? color : colors.border,
       }}>
       <Text
-        className="text-sm font-medium"
+        className="font-sans text-sm font-medium"
         style={{ color: selected ? '#FFFFFF' : colors.textSecondary }}>
         {label}
       </Text>

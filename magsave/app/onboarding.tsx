@@ -41,7 +41,7 @@ const SLIDES: Slide[] = [
   {
     title: 'Hola, soy Magsave 👋',
     subtitle: 'Tu compañera para llevar las finanzas sin drama',
-    illustration: <Text style={{ fontSize: 96 }}>👛</Text>,
+    illustration: <Text className="font-sans" style={{ fontSize: 96 }}>👛</Text>,
   },
   {
     title: 'Tú mandas aquí',
@@ -123,12 +123,12 @@ export default function OnboardingScreen() {
                 </Animated.View>
                 <Animated.Text
                   entering={FadeInUp.delay(150).duration(500)}
-                  className="mt-10 text-center text-[28px] font-bold text-text-primary">
+                  className="font-sans mt-10 text-center text-[28px] font-bold text-text-primary">
                   {slide.title}
                 </Animated.Text>
                 <Animated.Text
                   entering={FadeInUp.delay(300).duration(500)}
-                  className="mt-3 text-center text-base text-text-secondary">
+                  className="font-sans mt-3 text-center text-base text-text-secondary">
                   {slide.subtitle}
                 </Animated.Text>
               </>
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
         ) : (
           <View className="flex-row items-center justify-between">
             <Pressable onPress={finish} hitSlop={8}>
-              <Text className="text-base font-medium text-text-secondary">
+              <Text className="font-sans text-base font-medium text-text-secondary">
                 Saltar
               </Text>
             </Pressable>

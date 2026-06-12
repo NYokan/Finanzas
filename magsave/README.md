@@ -41,8 +41,8 @@ Escanea el QR con Expo Go (Android) o la cámara (iOS) y listo.
 |------|-------------|
 | Framework | Expo SDK 56 + Expo Router (TypeScript) |
 | Base de datos | expo-sqlite + drizzle-orm (migraciones en `db/migrations/`) |
-| Estilos | NativeWind v4 (Tailwind) |
-| Gráficos | victory-native v36 |
+| Estilos | NativeWind v4 (Tailwind), tema oscuro, fuente Inter |
+| Gráficos | react-native-gifted-charts |
 | Estado UI | Zustand (la data vive siempre en SQLite) |
 | Notificaciones | expo-notifications (locales, sin servidor) |
 

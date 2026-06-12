@@ -43,7 +43,7 @@ export default function RootLayout() {
     SplashScreen.hideAsync();
     return (
       <View className="flex-1 items-center justify-center bg-bg px-8">
-        <Text className="text-center text-base text-text-primary">
+        <Text className="font-sans text-center text-base text-text-primary">
           Ups, no pudimos preparar la base de datos 😢{'\n'}
           Cierra la app y vuelve a intentarlo.
         </Text>

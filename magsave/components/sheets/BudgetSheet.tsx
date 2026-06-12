@@ -53,21 +53,21 @@ export const BudgetSheet = forwardRef<BudgetSheetRef, object>((_props, ref) => {
         <>
           <View className="mt-1 items-center">
             <CategoryIcon icon={category.icon} color={category.color} size={52} />
-            <Text className="mt-2 text-xl font-semibold text-text-primary">
+            <Text className="font-sans mt-2 text-xl font-semibold text-text-primary">
               {category.name}
             </Text>
-            <Text className="text-sm capitalize text-text-secondary">
+            <Text className="font-sans text-sm capitalize text-text-secondary">
               Presupuesto de {monthYearLabel(currentMonthYear())}
             </Text>
           </View>
 
           <View className="items-center py-3">
-            <Text style={{ fontSize: 44, fontWeight: '700', color: colors.primary }}>
+            <Text className="font-sans" style={{ fontSize: 44, fontWeight: '700', color: colors.primary }}>
               {amount === ''
                 ? '$0'
                 : `$${amount.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`}
             </Text>
-            <Text className="text-xs text-text-secondary">
+            <Text className="font-sans text-xs text-text-secondary">
               Deja $0 para quitar el presupuesto
             </Text>
           </View>

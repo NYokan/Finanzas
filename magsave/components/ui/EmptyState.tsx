@@ -10,12 +10,12 @@ interface Props {
 export function EmptyState({ emoji, title, subtitle }: Props) {
   return (
     <View className="items-center px-8 py-10">
-      <Text className="text-5xl">{emoji}</Text>
-      <Text className="mt-3 text-center text-base font-semibold text-text-primary">
+      <Text className="font-sans text-5xl">{emoji}</Text>
+      <Text className="font-sans mt-3 text-center text-base font-semibold text-text-primary">
         {title}
       </Text>
       {subtitle ? (
-        <Text className="mt-1 text-center text-sm text-text-secondary">
+        <Text className="font-sans mt-1 text-center text-sm text-text-secondary">
           {subtitle}
         </Text>
       ) : null}

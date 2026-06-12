@@ -34,7 +34,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
 
     return (
       <AppSheet ref={sheetRef}>
-        <Text className="mb-4 mt-1 text-center text-xl font-semibold text-text-primary">
+        <Text className="font-sans mb-4 mt-1 text-center text-xl font-semibold text-text-primary">
           ¿Qué quieres registrar?
         </Text>
         <View className="mb-2 flex-row gap-3">
@@ -43,7 +43,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
             style={{ backgroundColor: colors.dangerDim }}>
             <TrendDown size={36} color={colors.danger} />
-            <Text className="mt-3 text-base font-semibold text-text-primary">
+            <Text className="font-sans mt-3 text-base font-semibold text-text-primary">
               Agregar gasto
             </Text>
           </Pressable>
@@ -52,7 +52,7 @@ export const AddActionSheet = forwardRef<AddActionSheetRef, Props>(
             className="flex-1 items-center rounded-card p-6 active:opacity-70"
             style={{ backgroundColor: colors.successDim }}>
             <TrendUp size={36} color={colors.success} />
-            <Text className="mt-3 text-base font-semibold text-text-primary">
+            <Text className="font-sans mt-3 text-base font-semibold text-text-primary">
               Agregar ingreso
             </Text>
           </Pressable>
