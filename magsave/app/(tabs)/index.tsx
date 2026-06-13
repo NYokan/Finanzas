@@ -19,6 +19,7 @@ import { GlassMetricCard } from '@/components/ui/GlassMetricCard';
 import { HeroBalanceCard } from '@/components/ui/HeroBalanceCard';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors } from '@/constants/colors';
+import { tabBarClearance } from '@/constants/layout';
 import type { FixedExpenseWithStatus } from '@/db/queries/fixedExpenses';
 import { useAdvice } from '@/hooks/useAdvice';
 import { useBudgetSummary } from '@/hooks/useBudgets';
@@ -108,7 +109,7 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={{
           paddingTop: insets.top + 16,
-          paddingBottom: 140,
+          paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
         {/* Saludo */}

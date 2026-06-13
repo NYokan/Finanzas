@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors, shadow } from '@/constants/colors';
+import { tabBarClearance } from '@/constants/layout';
 import type { GoalWithProgress } from '@/db/queries/savings';
 import { useSavingsGoals, useTotalSaved } from '@/hooks/useSavingsGoals';
 import { notifyGoalCompleted } from '@/utils/notifications';
@@ -41,7 +42,7 @@ export default function AhorroScreen() {
         contentContainerStyle={{
           paddingTop: insets.top + 16,
           paddingHorizontal: 20,
-          paddingBottom: 140,
+          paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
         <Text className="font-sans text-xl font-bold text-text-primary">Ahorro</Text>
@@ -84,7 +85,9 @@ export default function AhorroScreen() {
                 <View key={goal.id} className="w-1/2 p-1.5">
                   <Pressable
                     onPress={() => detailSheetRef.current?.open(goal)}
-                    className="active:opacity-70">
+                    style={({ pressed }) => ({
+                      transform: [{ scale: pressed ? 0.98 : 1 }],
+                    })}>
                     <Card
                       style={{
                         backgroundColor: completed ? colors.successDim : colors.surface,
@@ -124,13 +127,18 @@ export default function AhorroScreen() {
         )}
       </ScrollView>
 
-      {/* Botón crear meta */}
+      {/* Botón crear meta (por encima de la navbar flotante) */}
       <Pressable
         onPress={() => goalSheetRef.current?.open()}
-        className="absolute flex-row items-center gap-2 rounded-full px-5 py-3.5 active:opacity-80"
-        style={[
+        className="absolute flex-row items-center gap-2 rounded-full px-5 py-3.5"
+        style={({ pressed }) => [
           shadow,
-          { bottom: 110, right: 20, backgroundColor: colors.primary },
+          {
+            bottom: tabBarClearance(insets.bottom) - 24,
+            right: 20,
+            backgroundColor: colors.primary,
+            transform: [{ scale: pressed ? 0.96 : 1 }],
+          },
         ]}>
         <Plus size={20} color="#FFFFFF" weight="bold" />
         <Text className="font-sans text-base font-semibold text-white">Nueva meta</Text>

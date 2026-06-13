@@ -17,6 +17,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Pill } from '@/components/ui/Pill';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors } from '@/constants/colors';
+import { tabBarClearance } from '@/constants/layout';
 import type { TransactionWithCategory } from '@/db/queries/transactions';
 import { useCategoriesForType } from '@/hooks/useCategories';
 import {
@@ -214,7 +215,7 @@ export default function GastosScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingTop: insets.top + 12,
-          paddingBottom: 130,
+          paddingBottom: tabBarClearance(insets.bottom),
         }}
         renderSectionHeader={({ section }) => (
           <Text className="font-sans mb-1 mt-4 px-5 text-sm font-semibold text-text-secondary">

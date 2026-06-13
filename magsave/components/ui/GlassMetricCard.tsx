@@ -28,7 +28,12 @@ export function GlassMetricCard({
   onPress,
 }: Props) {
   return (
-    <Pressable onPress={onPress} disabled={!onPress} className="active:opacity-80">
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => ({
+        transform: [{ scale: pressed && onPress ? 0.97 : 1 }],
+      })}>
       <View
         style={[
           shadow,

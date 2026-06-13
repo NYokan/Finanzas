@@ -9,6 +9,7 @@ import { BudgetSheet, type BudgetSheetRef } from '@/components/sheets/BudgetShee
 import { Card } from '@/components/ui/Card';
 import { ProgressBar, budgetColor } from '@/components/ui/ProgressBar';
 import { colors, PASTELS } from '@/constants/colors';
+import { tabBarClearance } from '@/constants/layout';
 import { useAdvice } from '@/hooks/useAdvice';
 import { useBudgetsWithUsage } from '@/hooks/useBudgets';
 import { useAllCategories } from '@/hooks/useCategories';
@@ -73,7 +74,7 @@ export default function ReportesScreen() {
         contentContainerStyle={{
           paddingTop: insets.top + 16,
           paddingHorizontal: 20,
-          paddingBottom: 140,
+          paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
         <Text className="font-sans text-xl font-bold text-text-primary">Reportes</Text>

@@ -7,17 +7,13 @@ import {
   Repeat,
   type Icon,
 } from 'phosphor-react-native';
-import { Dimensions, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '@/constants/colors';
+import { NAV_BOTTOM_GAP, NAV_HEIGHT, NAV_SIDE_MARGIN } from '@/constants/layout';
 
 const INACTIVE = '#B0B0B5';
-
-// Navbar flotante: 76 % del ancho de la pantalla (≈12 % de margen en cada lado)
-const { width: SCREEN_W } = Dimensions.get('window');
-const NAV_W = Math.round(SCREEN_W * 0.76);
-const NAV_LEFT = Math.round((SCREEN_W - NAV_W) / 2);
 
 function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolean }) {
   return (
@@ -56,21 +52,24 @@ export default function TabsLayout() {
         },
         tabBarStyle: {
           position: 'absolute',
-          bottom: insets.bottom + 16,
-          left: NAV_LEFT,
-          width: NAV_W,
-          height: 64,
-          borderRadius: 32,
+          // left/right simétricos: barra ancha y centrada con margen claro de
+          // los bordes en cualquier dispositivo (no depende de Dimensions).
+          bottom: insets.bottom + NAV_BOTTOM_GAP,
+          left: NAV_SIDE_MARGIN,
+          right: NAV_SIDE_MARGIN,
+          height: NAV_HEIGHT,
+          borderRadius: NAV_HEIGHT / 2,
           backgroundColor: colors.surface,
           borderTopWidth: 0,
-          elevation: 2,
+          elevation: 8,
           shadowColor: '#000',
-          shadowOpacity: 0.06,
-          shadowRadius: 12,
-          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 6 },
         },
         tabBarItemStyle: {
-          paddingTop: 9,
+          paddingTop: 10,
+          paddingBottom: 6,
         },
         sceneStyle: { backgroundColor: colors.bg },
       }}>

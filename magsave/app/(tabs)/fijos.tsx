@@ -21,6 +21,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors, shadow } from '@/constants/colors';
+import { tabBarClearance } from '@/constants/layout';
 import type { FixedExpenseWithStatus } from '@/db/queries/fixedExpenses';
 import {
   removeFixedExpense,
@@ -98,7 +99,12 @@ function FixedExpenseCard({
     : undefined;
 
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} className="active:opacity-70">
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      // Feedback por escala (no opacidad): evita el cuadrado gris de Android
+      // al animar opacidad sobre una card con elevation.
+      style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.98 : 1 }] })}>
       <Animated.View style={animatedStyle}>
         <Card style={{ minHeight: isBig ? 128 : 104, ...paidCardStyle }}>
           {/* Ícono con opacidad reducida cuando pagado; el resto de la card no se apaga */}
@@ -253,7 +259,7 @@ export default function FijosScreen() {
         contentContainerStyle={{
           paddingTop: insets.top + 16,
           paddingHorizontal: 20,
-          paddingBottom: 140,
+          paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
         <Text className="font-sans text-xl font-bold text-text-primary">
@@ -339,18 +345,19 @@ export default function FijosScreen() {
         )}
       </ScrollView>
 
-      {/* Botón agregar */}
+      {/* Botón agregar (por encima de la navbar flotante) */}
       <Pressable
         onPress={() => sheetRef.current?.open()}
-        className="absolute items-center justify-center rounded-full active:opacity-80"
-        style={[
+        className="absolute items-center justify-center rounded-full"
+        style={({ pressed }) => [
           shadow,
           {
-            bottom: 110,
+            bottom: tabBarClearance(insets.bottom) - 24,
             right: 20,
             width: 58,
             height: 58,
             backgroundColor: colors.primary,
+            transform: [{ scale: pressed ? 0.94 : 1 }],
           },
         ]}>
         <Plus size={28} color="#FFFFFF" weight="bold" />
