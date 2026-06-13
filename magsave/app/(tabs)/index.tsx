@@ -176,8 +176,9 @@ export default function HomeScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={{ marginTop: 32 }}
-            contentContainerStyle={{ gap: 12, paddingHorizontal: 24 }}>
+            style={{ marginTop: 24 }}
+            // paddingVertical para que Android no recorte las sombras de las cards
+            contentContainerStyle={{ gap: 8, paddingHorizontal: 24, paddingVertical: 10 }}>
             {topCategories.map((cat) => (
               <GlassMetricCard
                 key={`${cat.categoryId}`}
@@ -244,8 +245,8 @@ export default function HomeScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="mt-3"
-              contentContainerStyle={{ gap: 10, paddingHorizontal: 24 }}>
+              className="mt-1"
+              contentContainerStyle={{ gap: 8, paddingHorizontal: 24, paddingVertical: 10 }}>
               {upcoming.map(({ expense, daysLeft }) => (
                 <Card key={expense.id} style={{ width: 150, padding: 14 }}>
                   <Text

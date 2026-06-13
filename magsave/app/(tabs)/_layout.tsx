@@ -50,11 +50,11 @@ export default function TabsLayout() {
         },
         tabBarStyle: {
           position: 'absolute',
-          bottom: 25,
-          left: 20,
-          right: 20,
-          height: 70,
-          borderRadius: 40,
+          bottom: 24,
+          left: 32,
+          right: 32,
+          height: 64,
+          borderRadius: 32,
           backgroundColor: colors.surface,
           borderTopWidth: 0,
           elevation: 2,
@@ -64,7 +64,7 @@ export default function TabsLayout() {
           shadowOffset: { width: 0, height: 4 },
         },
         tabBarItemStyle: {
-          paddingTop: 12,
+          paddingTop: 9,
         },
         sceneStyle: { backgroundColor: colors.bg },
       }}>

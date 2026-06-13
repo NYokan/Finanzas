@@ -24,7 +24,7 @@ export function GlassMetricCard({
   amount,
   badge,
   accentColor = colors.primary,
-  width = 140,
+  width = 150,
   onPress,
 }: Props) {
   return (
