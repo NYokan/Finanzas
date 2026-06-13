@@ -1,17 +1,14 @@
 import { Pencil } from 'phosphor-react-native';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AdviceCard } from '@/components/AdviceCard';
 import { CategoryIcon } from '@/components/CategoryIcon';
-import { MonthlyBars } from '@/components/charts/MonthlyBars';
 import { BudgetSheet, type BudgetSheetRef } from '@/components/sheets/BudgetSheet';
 import { Card } from '@/components/ui/Card';
-import { Pill } from '@/components/ui/Pill';
 import { ProgressBar, budgetColor } from '@/components/ui/ProgressBar';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { colors } from '@/constants/colors';
+import { colors, PASTELS } from '@/constants/colors';
 import { useAdvice } from '@/hooks/useAdvice';
 import { useBudgetsWithUsage } from '@/hooks/useBudgets';
 import { useAllCategories } from '@/hooks/useCategories';
@@ -20,19 +17,29 @@ import { useExpensesByCategory } from '@/hooks/useTransactions';
 import { formatMoney } from '@/utils/currency';
 import { currentMonthYear, monthYearLabel } from '@/utils/dates';
 
-const PERIODS = [3, 6, 12] as const;
+// Ventana fija para los insights (el gráfico de barras se eliminó en v4)
+const INSIGHT_MONTHS = 6;
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+/** Card pastel con borde glass para el grid de insights. */
+function insightStyle(index: number) {
+  return {
+    minHeight: 112,
+    backgroundColor: PASTELS[index % PASTELS.length],
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.7)',
+  } as const;
+}
+
 export default function ReportesScreen() {
   const insets = useSafeAreaInsets();
-  const [period, setPeriod] = useState<(typeof PERIODS)[number]>(6);
   const monthYear = currentMonthYear();
   const budgetSheetRef = useRef<BudgetSheetRef>(null);
 
-  const { data: series, loading: loadingSeries } = useMonthlySeries(period);
+  const { data: series } = useMonthlySeries(INSIGHT_MONTHS);
   const { data: byCategory } = useExpensesByCategory(monthYear);
   const { data: streak } = useStreak();
   const { data: budgets } = useBudgetsWithUsage(monthYear);
@@ -70,49 +77,35 @@ export default function ReportesScreen() {
         }}
         showsVerticalScrollIndicator={false}>
         <Text className="font-sans text-xl font-bold text-text-primary">Reportes</Text>
+        <Text className="font-sans mt-0.5 text-sm text-text-secondary">
+          Últimos {INSIGHT_MONTHS} meses
+        </Text>
 
-        {/* Selector de período */}
-        <View className="mt-4 flex-row gap-2">
-          {PERIODS.map((p) => (
-            <Pill
-              key={p}
-              label={`${p} meses`}
-              selected={period === p}
-              onPress={() => setPeriod(p)}
-            />
-          ))}
-        </View>
-
-        {/* Gráfico de barras */}
-        <Card style={{ marginTop: 16, alignItems: 'center' }}>
-          {loadingSeries ? (
-            <Skeleton height={240} radius={16} />
-          ) : (
-            <MonthlyBars data={series ?? []} />
-          )}
-        </Card>
-
-        {/* Cards de insights */}
+        {/* Grid de insights (cards pastel con borde glass) */}
         <View className="mt-4 flex-row flex-wrap" style={{ marginHorizontal: -5 }}>
           <View className="w-1/2 p-1.5">
-            <Card style={{ minHeight: 96 }}>
-              <Text className="font-sans text-xs text-text-secondary">Mes con más gasto</Text>
-              <Text className="font-sans mt-1 text-base font-bold text-text-primary">
+            <Card style={insightStyle(0)}>
+              <Text className="font-sans text-xs font-medium text-text-secondary">
+                Mes con más gasto
+              </Text>
+              <Text className="font-sans mt-1 text-lg font-bold text-text-primary">
                 {insights.topMonth
                   ? capitalize(monthYearLabel(insights.topMonth.monthYear).split(' ')[0])
                   : '—'}
               </Text>
               {insights.topMonth && (
-                <Text className="font-sans text-sm" style={{ color: colors.danger }}>
+                <Text className="font-sans text-sm font-semibold" style={{ color: colors.danger }}>
                   {formatMoney(insights.topMonth.expense)}
                 </Text>
               )}
             </Card>
           </View>
           <View className="w-1/2 p-1.5">
-            <Card style={{ minHeight: 96 }}>
-              <Text className="font-sans text-xs text-text-secondary">Categoría líder</Text>
-              <Text className="font-sans mt-1 text-base font-bold text-text-primary" numberOfLines={1}>
+            <Card style={insightStyle(1)}>
+              <Text className="font-sans text-xs font-medium text-text-secondary">
+                Categoría líder
+              </Text>
+              <Text className="font-sans mt-1 text-lg font-bold text-text-primary" numberOfLines={1}>
                 {insights.topCategory?.name ?? '—'}
               </Text>
               {insights.topCategory && (
@@ -123,19 +116,21 @@ export default function ReportesScreen() {
             </Card>
           </View>
           <View className="w-1/2 p-1.5">
-            <Card style={{ minHeight: 96 }}>
-              <Text className="font-sans text-xs text-text-secondary">Promedio mensual</Text>
-              <Text className="font-sans mt-1 text-base font-bold text-text-primary">
+            <Card style={insightStyle(2)}>
+              <Text className="font-sans text-xs font-medium text-text-secondary">
+                Promedio mensual
+              </Text>
+              <Text className="font-sans mt-1 text-lg font-bold text-text-primary">
                 {insights.avgExpense > 0 ? formatMoney(insights.avgExpense) : '—'}
               </Text>
               <Text className="font-sans text-sm text-text-secondary">de gastos</Text>
             </Card>
           </View>
           <View className="w-1/2 p-1.5">
-            <Card style={{ minHeight: 96 }}>
-              <Text className="font-sans text-xs text-text-secondary">Racha</Text>
-              <Text className="font-sans mt-1 text-base font-bold text-text-primary">
-                {streak ?? 0} {streak === 1 ? 'día' : 'días'} seguidos 🔥
+            <Card style={insightStyle(3)}>
+              <Text className="font-sans text-xs font-medium text-text-secondary">Racha</Text>
+              <Text className="font-sans mt-1 text-lg font-bold text-text-primary">
+                {streak ?? 0} {streak === 1 ? 'día' : 'días'} 🔥
               </Text>
               <Text className="font-sans text-sm text-text-secondary">registrando gastos</Text>
             </Card>

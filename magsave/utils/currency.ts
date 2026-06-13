@@ -18,16 +18,3 @@ export function formatUSD(amount: number): string {
 
 /** Formato por defecto de la app */
 export const formatMoney = formatCLP;
-
-/** "$1.2K", "$3.4M" — para labels de gráficos */
-export function abbreviateMoney(amount: number): string {
-  const abs = Math.abs(amount);
-  const sign = amount < 0 ? '−' : '';
-  if (abs >= 1_000_000) return `${sign}$${trimZero((abs / 1_000_000).toFixed(1))}M`;
-  if (abs >= 1_000) return `${sign}$${trimZero((abs / 1_000).toFixed(1))}K`;
-  return `${sign}$${Math.round(abs)}`;
-}
-
-function trimZero(s: string): string {
-  return s.endsWith('.0') ? s.slice(0, -2) : s;
-}
