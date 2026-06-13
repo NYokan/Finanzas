@@ -7,7 +7,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import * as Haptics from 'expo-haptics';
 import { Calendar, X } from 'phosphor-react-native';
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -24,7 +24,8 @@ export interface GoalSheetRef {
   open: (goal?: SavingsGoal) => void;
 }
 
-// Opciones básicas para partir rápido
+// Opciones básicas para partir rápido. El emoji NO se muestra en la UI:
+// solo se guarda en la DB (la columna es not null) derivado del preset.
 const PRESETS: { name: string; emoji: string }[] = [
   { name: 'Viaje', emoji: '✈️' },
   { name: 'Emergencias', emoji: '🚨' },
@@ -34,84 +35,24 @@ const PRESETS: { name: string; emoji: string }[] = [
   { name: 'Tecnología', emoji: '💻' },
 ];
 
-// Palabras clave → emojis sugeridos según lo que escriba
-const EMOJI_KEYWORDS: [RegExp, string[]][] = [
-  [/viaje|vacacion|playa|paseo|turismo/, ['✈️', '🏖', '🧳']],
-  [/espana|españa/, ['🇪🇸']],
-  [/francia|paris/, ['🇫🇷', '🗼']],
-  [/italia|roma/, ['🇮🇹']],
-  [/japon|tokio/, ['🇯🇵']],
-  [/brasil/, ['🇧🇷']],
-  [/argentina/, ['🇦🇷']],
-  [/peru/, ['🇵🇪']],
-  [/mexico/, ['🇲🇽']],
-  [/estados unidos|usa|gringo/, ['🇺🇸']],
-  [/europa/, ['🇪🇺', '🏰']],
-  [/casa|depa|departamento|hogar|mueble|pieza/, ['🏠', '🛋']],
-  [/auto|carro|vehiculo/, ['🚗']],
-  [/moto/, ['🏍']],
-  [/bici|bicicleta/, ['🚲']],
-  [/compu|laptop|notebook|pc|tecno/, ['💻']],
-  [/celular|telefono|iphone/, ['📱']],
-  [/emergencia|imprevisto|fondo|colchon/, ['🚨', '💰']],
-  [/regalo|cumple|navidad/, ['🎁', '🎂']],
-  [/perro|gato|mascota/, ['🐶', '🐱']],
-  [/ropa|zapato|zapatilla/, ['👗', '👟']],
-  [/estudio|curso|universidad|carrera|magister/, ['🎓', '📚']],
-  [/matrimonio|boda|anillo/, ['💍']],
-  [/bebe|hijo|guagua/, ['👶']],
-  [/musica|guitarra|concierto|entrada/, ['🎸', '🎤']],
-  [/foto|camara/, ['📷']],
-  [/juego|consola|play|nintendo/, ['🎮']],
-  [/plata|ahorro|dinero|inversion/, ['💰']],
-];
-
-function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
-}
-
-function suggestEmojis(name: string): string[] {
-  const n = normalize(name);
-  if (n.trim().length < 3) return [];
-  const result: string[] = [];
-  for (const [re, emojis] of EMOJI_KEYWORDS) {
-    if (re.test(n)) {
-      for (const e of emojis) if (!result.includes(e)) result.push(e);
-    }
-  }
-  return result.slice(0, 6);
-}
-
-const EMOJIS = [
-  '🏖', '✈️', '🏠', '🚗', '💻', '📱', '🎓', '💍',
-  '👶', '🐶', '🐱', '🎸', '📷', '🏍', '🚲', '👟',
-  '🎮', '💄', '🌴', '🎂', '🛋', '🧳', '⚽', '📚',
-  '🪴', '💰', '🛒', '🎤', '🎁', '❤️', '🌟', '🎯',
-];
+const DEFAULT_EMOJI = '🎯';
 
 /** Crear o editar una meta de ahorro. */
 export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
   const sheetRef = useRef<BottomSheetModal>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [name, setName] = useState('');
-  const [emoji, setEmoji] = useState('🌟');
-  const [emojiPickedManually, setEmojiPickedManually] = useState(false);
+  const [existingEmoji, setExistingEmoji] = useState<string | null>(null);
   const [amount, setAmount] = useState('');
   const [deadline, setDeadline] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const suggested = useMemo(() => suggestEmojis(name), [name]);
-
   useImperativeHandle(ref, () => ({
     open: (goal) => {
       setEditingId(goal?.id ?? null);
       setName(goal?.name ?? '');
-      setEmoji(goal?.emoji ?? '🌟');
-      setEmojiPickedManually(!!goal);
+      setExistingEmoji(goal?.emoji ?? null);
       setAmount(goal ? String(goal.targetAmount) : '');
       setDeadline(goal?.deadline ?? null);
       setShowDatePicker(false);
@@ -119,26 +60,9 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
     },
   }));
 
-  const onNameChange = (text: string) => {
-    setName(text);
-    // si no eligió emoji a mano, adoptar la primera sugerencia
-    if (!emojiPickedManually) {
-      const s = suggestEmojis(text);
-      if (s.length > 0) setEmoji(s[0]);
-    }
-  };
-
-  const applyPreset = (preset: { name: string; emoji: string }) => {
+  const applyPreset = (preset: { name: string }) => {
     Haptics.selectionAsync();
     setName(preset.name);
-    setEmoji(preset.emoji);
-    setEmojiPickedManually(false);
-  };
-
-  const pickEmoji = (e: string) => {
-    Haptics.selectionAsync();
-    setEmoji(e);
-    setEmojiPickedManually(true);
   };
 
   const onDateChange = (event: DateTimePickerEvent, selected?: Date) => {
@@ -158,6 +82,8 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
     }
     setSaving(true);
     try {
+      const preset = PRESETS.find((p) => p.name === name.trim());
+      const emoji = preset?.emoji ?? existingEmoji ?? DEFAULT_EMOJI;
       await saveGoal(
         { name: name.trim(), emoji, targetAmount: parsed, deadline },
         editingId ?? undefined,
@@ -178,7 +104,7 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
         {editingId ? 'Editar meta' : 'Nueva meta de ahorro'}
       </Text>
 
-      {/* Presets rápidos */}
+      {/* Presets rápidos (solo texto) */}
       {!editingId && (
         <ScrollView
           horizontal
@@ -188,14 +114,13 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
             <Pressable
               key={p.name}
               onPress={() => applyPreset(p)}
-              className="flex-row items-center gap-1.5 rounded-pill px-3 py-2"
+              className="rounded-pill px-4 py-2"
               style={{
                 backgroundColor:
                   name === p.name ? colors.primaryDim : colors.surfaceAlt,
                 borderWidth: 1,
                 borderColor: name === p.name ? colors.primary : 'transparent',
               }}>
-              <Text className="font-sans text-sm">{p.emoji}</Text>
               <Text
                 className="font-sans text-sm font-medium"
                 style={{
@@ -208,60 +133,21 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
         </ScrollView>
       )}
 
-      <View className="flex-row items-center gap-3">
-        <Text className="font-sans text-4xl">{emoji}</Text>
-        <BottomSheetTextInput
-          value={name}
-          onChangeText={onNameChange}
-          placeholder="Nombre (ej: Viaje a España)"
-          placeholderTextColor={colors.textSecondary}
-          style={{
-            flex: 1,
-            backgroundColor: colors.inputBg,
-            borderRadius: 12,
-            paddingHorizontal: 14,
-            paddingVertical: 11,
-            fontSize: 15,
-            fontFamily: 'Inter',
-            color: colors.textPrimary,
-          }}
-        />
-      </View>
-
-      {/* Emojis sugeridos según el nombre */}
-      {suggested.length > 0 && (
-        <View className="mt-2 flex-row items-center gap-2">
-          <Text className="font-sans text-xs text-text-secondary">Sugeridos:</Text>
-          {suggested.map((e) => (
-            <Pressable
-              key={e}
-              onPress={() => pickEmoji(e)}
-              className="rounded-pill px-2 py-1"
-              style={{
-                backgroundColor: emoji === e ? colors.primaryDim : 'transparent',
-              }}>
-              <Text className="font-sans text-2xl">{e}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-
-      {/* Emoji picker (grid) */}
-      <View className="mt-2 flex-row flex-wrap">
-        {EMOJIS.map((e) => (
-          <Pressable
-            key={e}
-            onPress={() => pickEmoji(e)}
-            className="items-center justify-center rounded-pill"
-            style={{
-              width: '12.5%',
-              paddingVertical: 5,
-              backgroundColor: emoji === e ? colors.primaryDim : 'transparent',
-            }}>
-            <Text className="font-sans text-2xl">{e}</Text>
-          </Pressable>
-        ))}
-      </View>
+      <BottomSheetTextInput
+        value={name}
+        onChangeText={setName}
+        placeholder="Nombre (ej: Viaje a España)"
+        placeholderTextColor={colors.textSecondary}
+        style={{
+          backgroundColor: colors.inputBg,
+          borderRadius: 12,
+          paddingHorizontal: 14,
+          paddingVertical: 11,
+          fontSize: 15,
+          fontFamily: 'Inter',
+          color: colors.textPrimary,
+        }}
+      />
 
       {/* Monto objetivo */}
       <View className="items-center py-1">

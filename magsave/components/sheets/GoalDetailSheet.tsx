@@ -122,7 +122,11 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
           <Pressable onPress={confirmDelete} hitSlop={8} className="p-1">
             <Trash size={20} color={colors.textSecondary} />
           </Pressable>
-          <Text className="font-sans text-5xl">{goal.emoji}</Text>
+          <Text
+            className="font-sans flex-1 px-3 text-center text-xl font-semibold text-text-primary"
+            numberOfLines={1}>
+            {goal.name}
+          </Text>
           <Pressable
             onPress={() => {
               sheetRef.current?.dismiss();
@@ -133,13 +137,10 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
             <Pencil size={20} color={colors.textSecondary} />
           </Pressable>
         </View>
-        <Text className="font-sans mt-2 text-center text-xl font-semibold text-text-primary">
-          {goal.name}
-        </Text>
 
         {/* Progreso detallado */}
-        <View className="mt-3">
-          <ProgressBar progress={progress} height={12} />
+        <View className="mt-4">
+          <ProgressBar progress={progress} height={12} variant="gradient" />
           <View className="mt-2 flex-row justify-between">
             <Text className="font-sans text-sm text-text-secondary">
               {formatMoney(goal.saved)} de {formatMoney(goal.targetAmount)}

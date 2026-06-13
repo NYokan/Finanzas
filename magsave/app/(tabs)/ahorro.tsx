@@ -1,4 +1,4 @@
-import { Plus } from 'phosphor-react-native';
+import { PiggyBank, Plus } from 'phosphor-react-native';
 import { useRef, useState } from 'react';
 import { Dimensions, Pressable, ScrollView, Text, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -70,7 +70,7 @@ export default function AhorroScreen() {
           </View>
         ) : list.length === 0 ? (
           <EmptyState
-            emoji="🎯"
+            icon={PiggyBank}
             title="Tu primera meta te espera"
             subtitle="¿Unas vacaciones? ¿Algo para la casa? Crea una meta y empieza a juntar"
           />
@@ -89,9 +89,8 @@ export default function AhorroScreen() {
                       style={{
                         backgroundColor: completed ? colors.successDim : colors.surface,
                       }}>
-                      <Text className="font-sans text-4xl">{goal.emoji}</Text>
                       <Text
-                        className="font-sans mt-2 text-base font-semibold text-text-primary"
+                        className="font-sans text-base font-semibold text-text-primary"
                         numberOfLines={1}>
                         {goal.name}
                       </Text>
@@ -103,8 +102,8 @@ export default function AhorroScreen() {
                         </Text>
                       ) : (
                         <>
-                          <View className="mt-2">
-                            <ProgressBar progress={progress} height={8} />
+                          <View className="mt-3">
+                            <ProgressBar progress={progress} height={8} variant="gradient" />
                           </View>
                           <Text className="font-sans mt-2 text-xs text-text-secondary">
                             {formatMoney(goal.saved)} de {formatMoney(goal.targetAmount)}

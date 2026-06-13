@@ -1,16 +1,25 @@
+import type { Icon } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
+import { colors } from '@/constants/colors';
+
 interface Props {
-  emoji: string;
+  emoji?: string;
+  /** alternativa al emoji: ícono Phosphor en gris */
+  icon?: Icon;
   title: string;
   subtitle?: string;
 }
 
 /** Mensaje cálido cuando una lista todavía no tiene datos. */
-export function EmptyState({ emoji, title, subtitle }: Props) {
+export function EmptyState({ emoji, icon: IconComponent, title, subtitle }: Props) {
   return (
     <View className="items-center px-8 py-10">
-      <Text className="font-sans text-5xl">{emoji}</Text>
+      {IconComponent ? (
+        <IconComponent size={48} color={colors.textSecondary} weight="duotone" />
+      ) : (
+        <Text className="font-sans text-5xl">{emoji}</Text>
+      )}
       <Text className="font-sans mt-3 text-center text-base font-semibold text-text-primary">
         {title}
       </Text>
