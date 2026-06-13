@@ -83,30 +83,29 @@ function FixedExpenseCard({
     transform: [{ scale: scale.value }],
   }));
 
-  // Paleta del estado pagado: la card "baja" al nivel del fondo sin sombra,
-  // los textos se apagan a gris claro, solo el check verde mantiene vivacidad.
+  // Las cards de fijos no usan elevation: en Android la sombra dibuja un
+  // contorno rectangular mientras la card hace el pulso de escala al
+  // marcar/desmarcar. Se definen con un borde sutil. Pagada: "baja" al nivel
+  // del fondo (#F9F9FB), textos en gris claro y solo el check verde queda vivo.
   const PAID_TEXT = '#B0B0B0';
-  const paidCardStyle = isPaid
-    ? {
-        backgroundColor: '#F9F9FB',
-        elevation: 0,
-        shadowOpacity: 0,
-        shadowRadius: 0,
-        shadowColor: 'transparent' as const,
-        borderWidth: 1,
-        borderColor: '#F0F0F0',
-      }
-    : undefined;
+  const cardStyle = {
+    minHeight: isBig ? 128 : 104,
+    elevation: 0,
+    shadowOpacity: 0,
+    shadowColor: 'transparent' as const,
+    borderWidth: 1,
+    borderColor: isPaid ? '#F0F0F0' : colors.border,
+    backgroundColor: isPaid ? '#F9F9FB' : colors.surface,
+  };
 
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
-      // Feedback por escala (no opacidad): evita el cuadrado gris de Android
-      // al animar opacidad sobre una card con elevation.
+      // Feedback por escala (no opacidad): evita artefactos de Android.
       style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.98 : 1 }] })}>
       <Animated.View style={animatedStyle}>
-        <Card style={{ minHeight: isBig ? 128 : 104, ...paidCardStyle }}>
+        <Card style={cardStyle}>
           {/* Ícono con opacidad reducida cuando pagado; el resto de la card no se apaga */}
           <View style={{ opacity: isPaid ? 0.4 : 1, alignSelf: 'flex-start' }}>
             <CategoryIcon

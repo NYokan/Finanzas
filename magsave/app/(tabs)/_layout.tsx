@@ -7,7 +7,8 @@ import {
   Repeat,
   type Icon,
 } from 'phosphor-react-native';
-import { View } from 'react-native';
+import type { ReactNode } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '@/constants/colors';
@@ -23,6 +24,7 @@ function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolea
         color={focused ? colors.primary : INACTIVE}
         weight={focused ? 'fill' : 'regular'}
       />
+      {/* Indicador subrayado del tab activo */}
       <View
         style={{
           marginTop: 3,
@@ -36,41 +38,112 @@ function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolea
   );
 }
 
-export default function TabsLayout() {
+// Tipo mínimo de lo que usamos de las props del tab bar (evita imports frágiles
+// a rutas internas de expo-router).
+interface FloatingTabBarProps {
+  state: { index: number; routes: { key: string; name: string }[] };
+  descriptors: Record<
+    string,
+    {
+      options: {
+        title?: string;
+        tabBarIcon?: (p: { focused: boolean; color: string; size: number }) => ReactNode;
+      };
+    }
+  >;
+  navigation: {
+    emit: (e: { type: 'tabPress'; target: string; canPreventDefault: true }) => {
+      defaultPrevented: boolean;
+    };
+    navigate: (name: string) => void;
+  };
+}
+
+/**
+ * Navbar flotante propia. El contenedor externo ocupa todo el ancho con
+ * `paddingHorizontal`, así la barra interna queda SIEMPRE separada de los
+ * bordes por NAV_SIDE_MARGIN y es imposible que se desborde (a diferencia de
+ * left/right en tabBarStyle, que react-navigation no respeta de forma fiable).
+ */
+function FloatingTabBar({ state, descriptors, navigation }: FloatingTabBarProps) {
   const insets = useSafeAreaInsets();
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: true,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: INACTIVE,
-        tabBarLabelStyle: {
-          fontFamily: 'Inter',
-          fontSize: 10,
-          fontWeight: '500',
-        },
-        tabBarStyle: {
-          position: 'absolute',
-          // left/right simétricos: barra ancha y centrada con margen claro de
-          // los bordes en cualquier dispositivo (no depende de Dimensions).
-          bottom: insets.bottom + NAV_BOTTOM_GAP,
-          left: NAV_SIDE_MARGIN,
-          right: NAV_SIDE_MARGIN,
+    <View
+      pointerEvents="box-none"
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: insets.bottom + NAV_BOTTOM_GAP,
+        paddingHorizontal: NAV_SIDE_MARGIN,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
           height: NAV_HEIGHT,
           borderRadius: NAV_HEIGHT / 2,
           backgroundColor: colors.surface,
-          borderTopWidth: 0,
           elevation: 8,
           shadowColor: '#000',
           shadowOpacity: 0.08,
           shadowRadius: 16,
           shadowOffset: { width: 0, height: 6 },
-        },
-        tabBarItemStyle: {
-          paddingTop: 10,
-          paddingBottom: 6,
-        },
+        }}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const focused = state.index === index;
+          const label = options.title ?? route.name;
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!focused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+
+          return (
+            <Pressable
+              key={route.key}
+              onPress={onPress}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingTop: 8,
+              }}>
+              {options.tabBarIcon?.({
+                focused,
+                color: focused ? colors.primary : INACTIVE,
+                size: 24,
+              })}
+              <Text
+                style={{
+                  fontFamily: 'Inter',
+                  fontSize: 10,
+                  fontWeight: '500',
+                  marginTop: 3,
+                  color: focused ? colors.primary : INACTIVE,
+                }}>
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <Tabs
+      tabBar={(props) => <FloatingTabBar {...(props as unknown as FloatingTabBarProps)} />}
+      screenOptions={{
+        headerShown: false,
         sceneStyle: { backgroundColor: colors.bg },
       }}>
       <Tabs.Screen
