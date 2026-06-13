@@ -199,7 +199,7 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
               <Text
                 className="font-sans text-sm font-medium"
                 style={{
-                  color: name === p.name ? colors.primaryLight : colors.textSecondary,
+                  color: name === p.name ? colors.primary : colors.textSecondary,
                 }}>
                 {p.name}
               </Text>
@@ -267,7 +267,7 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
       <View className="items-center py-1">
         <Text
           className="font-sans"
-          style={{ fontSize: 34, fontWeight: '700', color: colors.primaryLight }}>
+          style={{ fontSize: 34, fontWeight: '700', color: colors.primary }}>
           {amount === '' ? '$0' : `$${amount.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`}
         </Text>
       </View>
@@ -278,10 +278,10 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
           onPress={() => setShowDatePicker(true)}
           className="flex-row items-center gap-1.5 rounded-pill px-3 py-2"
           style={{ backgroundColor: colors.primaryDim }}>
-          <Calendar size={15} color={colors.primaryLight} />
+          <Calendar size={15} color={colors.primary} />
           <Text
             className="font-sans text-sm font-medium"
-            style={{ color: colors.primaryLight }}>
+            style={{ color: colors.primary }}>
             {deadline
               ? `Para el ${fullDateLabel(parseISODate(deadline)).toLowerCase()}`
               : 'Fecha límite (opcional)'}

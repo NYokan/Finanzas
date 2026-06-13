@@ -1,28 +1,39 @@
-// Paleta oficial de Magsave (tema oscuro, guía del usuario 12-jun-2026)
+// Paleta oficial de Magsave (modo claro + rosa, guía del usuario 12-jun-2026, v3)
 // Mantener en sincronía con tailwind.config.js
 export const colors = {
-  primary: '#7F56D9', // morado neón — acento principal
-  primaryLight: '#9D71FD', // extremo claro del gradiente morado
-  primaryDim: '#2A2342', // tinte morado para fondos de chips/cards
-  accent: '#47B0FF', // azul claro — acento secundario
-  success: '#22C55E', // verde brillante — ingresos, metas cumplidas
-  successDim: '#163A26', // tinte verde para fondos
-  danger: '#F07A50', // coral — gastos, alertas
-  dangerDim: '#3D241B', // tinte coral para fondos
-  warning: '#F2C14E', // ámbar — advertencias, cerca del límite
-  bg: '#121212', // fondo principal, negro/gris muy oscuro
-  surface: '#1E1E24', // cards (gris con toque frío)
-  surfaceAlt: '#2A2A30', // círculos de íconos, elementos sobre cards
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A0A0A0',
-  border: '#2C2C33',
-  glassBorder: 'rgba(255,255,255,0.1)', // borde fino de las glass cards
+  primary: '#FF6A88', // rosa de acento — interactivo, activo
+  primaryLight: '#FF9A9E', // rosa melocotón — extremo del gradiente hero
+  primaryDim: '#FFE9EE', // tinte rosa para fondos de chips/cards
+  success: '#16A34A', // verde — ingresos, metas cumplidas (legible sobre claro)
+  successDim: '#E8F6EE', // tinte verde para fondos
+  danger: '#E25C3D', // coral — gastos, alertas
+  dangerDim: '#FDEDE6', // tinte coral para fondos
+  warning: '#D99A1B', // ámbar — advertencias, cerca del límite
+  bg: '#F7F7F9', // fondo principal, gris muy claro (no blanco puro)
+  surface: '#FFFFFF', // cards blancas
+  surfaceAlt: '#F0F0F0', // círculos de íconos, elementos sobre cards
+  textPrimary: '#1C1C1E', // casi negro — títulos y montos
+  textSecondary: '#8E8E93', // gris medio — subtítulos y fechas
+  border: '#ECECF0',
+  glassBorder: 'rgba(255,255,255,0.5)', // borde glass de la hero card
 } as const;
+
+// Gradiente de la tarjeta principal del Home (rosa melocotón → rosa suave)
+export const HERO_GRADIENT = ['#FF9A9E', '#FECFEF'] as const;
 
 export const shadow = {
   shadowColor: '#000',
-  shadowOpacity: 0.2,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 4 },
-  elevation: 4,
+  shadowOpacity: 0.05,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 1,
+} as const;
+
+// Glow rosa para la hero card (reemplaza la sombra negra)
+export const glowPink = {
+  shadowColor: '#FF9A9E',
+  shadowOpacity: 0.3,
+  shadowRadius: 15,
+  shadowOffset: { width: 0, height: 6 },
+  elevation: 6,
 } as const;

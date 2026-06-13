@@ -130,10 +130,10 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
             onPress={() => setShowDayPicker(true)}
             className="flex-row items-center gap-1.5 rounded-pill px-3 py-2.5"
             style={{ backgroundColor: colors.primaryDim }}>
-            <Calendar size={16} color={colors.primaryLight} />
+            <Calendar size={16} color={colors.primary} />
             <Text
               className="font-sans text-sm font-medium"
-              style={{ color: colors.primaryLight }}>
+              style={{ color: colors.primary }}>
               Día {dayOfMonth} de cada mes
             </Text>
           </Pressable>

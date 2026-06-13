@@ -196,7 +196,7 @@ export const TransactionSheet = forwardRef<TransactionSheetRef, object>(
                 }}>
                 <Text
                   className="font-sans text-xs font-medium"
-                  style={{ color: note === s ? colors.primaryLight : colors.textSecondary }}>
+                  style={{ color: note === s ? colors.primary : colors.textSecondary }}>
                   {s}
                 </Text>
               </Pressable>
@@ -226,10 +226,10 @@ export const TransactionSheet = forwardRef<TransactionSheetRef, object>(
             onPress={() => setShowDatePicker(true)}
             className="flex-row items-center gap-1.5 rounded-pill px-3 py-2.5"
             style={{ backgroundColor: colors.primaryDim }}>
-            <Calendar size={16} color={colors.primaryLight} />
+            <Calendar size={16} color={colors.primary} />
             <Text
               className="font-sans text-sm font-medium"
-              style={{ color: colors.primaryLight }}>
+              style={{ color: colors.primary }}>
               {relativeDateLabel(date)}
             </Text>
           </Pressable>

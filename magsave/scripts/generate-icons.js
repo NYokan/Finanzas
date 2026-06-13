@@ -12,7 +12,7 @@ const sharp = require('sharp');
 
 const OUT = path.join(__dirname, '..', 'assets', 'images');
 
-const VIOLET = '#7F56D9';
+const PINK = '#FF6A88';
 const WHITE = '#FFFFFF';
 
 // Path del ícono piggy-bank de Phosphor, peso "fill" (viewBox 256x256)
@@ -37,8 +37,8 @@ async function write(name, svg) {
 }
 
 async function main() {
-  // Ícono principal (iOS / genérico): chanchito blanco sobre violeta
-  await write('icon.png', piggySvg({ size: 1024, color: WHITE, scale: 0.62, bg: VIOLET }));
+  // Ícono principal (iOS / genérico): chanchito blanco sobre rosa
+  await write('icon.png', piggySvg({ size: 1024, color: WHITE, scale: 0.62, bg: PINK }));
 
   // Adaptive icon de Android: capa de frente (transparente), fondo y monocromo.
   // La zona segura del adaptive icon es el 66% central.
@@ -48,20 +48,20 @@ async function main() {
   );
   await write(
     'android-icon-background.png',
-    piggySvg({ size: 1024, color: VIOLET, scale: 0, bg: VIOLET }),
+    piggySvg({ size: 1024, color: PINK, scale: 0, bg: PINK }),
   );
   await write(
     'android-icon-monochrome.png',
     piggySvg({ size: 1024, color: WHITE, scale: 0.46 }),
   );
 
-  // Splash: chanchito blanco sobre transparente (el fondo oscuro lo pone app.json)
-  await write('splash-icon.png', piggySvg({ size: 512, color: WHITE, scale: 0.85 }));
+  // Splash: chanchito rosa sobre transparente (el fondo claro lo pone app.json)
+  await write('splash-icon.png', piggySvg({ size: 512, color: PINK, scale: 0.85 }));
 
   // Favicon (web)
   await write(
     'favicon.png',
-    piggySvg({ size: 64, color: WHITE, scale: 0.74, bg: VIOLET, radius: 14 }),
+    piggySvg({ size: 64, color: WHITE, scale: 0.74, bg: PINK, radius: 14 }),
   );
 }
 
