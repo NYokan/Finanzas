@@ -2,8 +2,8 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Bell } from 'phosphor-react-native';
-import { useRef } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Alert, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AdviceCard } from '@/components/AdviceCard';
@@ -21,6 +21,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { colors } from '@/constants/colors';
 import type { FixedExpenseWithStatus } from '@/db/queries/fixedExpenses';
 import { useAdvice } from '@/hooks/useAdvice';
+import type { Advice } from '@/utils/advisor';
 import { useBudgetSummary } from '@/hooks/useBudgets';
 import { useActiveFixedTotal, useFixedExpenses } from '@/hooks/useFixedExpenses';
 import {
@@ -81,6 +82,7 @@ export default function HomeScreen() {
   const { data: advice } = useAdvice();
 
   const txSheetRef = useRef<TransactionSheetRef>(null);
+  const [focusedAdvice, setFocusedAdvice] = useState<Advice | null>(null);
 
   const loading = loadingTotals || loadingBudget;
   const spent = budget?.totalSpent ?? 0;
@@ -170,9 +172,15 @@ export default function HomeScreen() {
             style={{ marginTop: 12 }}
             contentContainerStyle={{ gap: 8, paddingHorizontal: 24, paddingVertical: 8 }}>
             {(advice ?? []).slice(0, 3).map((a) => (
-              <View key={a.id} style={{ width: 300 }}>
+              <Pressable
+                key={a.id}
+                style={{ width: 300 }}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setFocusedAdvice(a);
+                }}>
                 <AdviceCard advice={a} compact />
-              </View>
+              </Pressable>
             ))}
           </ScrollView>
         )}
@@ -322,6 +330,26 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <Modal
+        visible={focusedAdvice !== null}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setFocusedAdvice(null)}>
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.45)',
+            justifyContent: 'center',
+            paddingHorizontal: 24,
+          }}
+          onPress={() => setFocusedAdvice(null)}>
+          <Pressable style={{ width: '100%' }}>
+            {focusedAdvice && <AdviceCard advice={focusedAdvice} />}
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <TransactionSheet ref={txSheetRef} />
     </View>
