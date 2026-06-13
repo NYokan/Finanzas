@@ -1,7 +1,15 @@
 import * as Haptics from 'expo-haptics';
 import { CheckCircle, Plus } from 'phosphor-react-native';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+  ZoomIn,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryIcon } from '@/components/CategoryIcon';
@@ -42,6 +50,98 @@ const STATUS_COLOR: Record<Status, string> = {
   pending: colors.warning,
   overdue: colors.danger,
 };
+
+/**
+ * Card de un gasto fijo con transición al pagar: la opacidad baja en
+ * suave (no en seco) y la card hace un pulso de escala; el check entra
+ * con zoom.
+ */
+function FixedExpenseCard({
+  item,
+  status,
+  isBig,
+  onPress,
+  onLongPress,
+}: {
+  item: FixedExpenseWithStatus;
+  status: Status;
+  isBig: boolean;
+  onPress: () => void;
+  onLongPress: () => void;
+}) {
+  const isPaid = status === 'paid';
+  const opacity = useSharedValue(isPaid ? 0.45 : 1);
+  const scale = useSharedValue(1);
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    if (mounted.current) {
+      scale.value = withSequence(withSpring(0.96, { damping: 14 }), withSpring(1));
+    }
+    mounted.current = true;
+    opacity.value = withTiming(isPaid ? 0.45 : 1, { duration: 350 });
+  }, [isPaid, opacity, scale]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <Pressable onPress={onPress} onLongPress={onLongPress} className="active:opacity-70">
+      <Animated.View style={animatedStyle}>
+        <Card style={{ minHeight: isBig ? 128 : 104 }}>
+          <View className="flex-row items-start justify-between">
+            <CategoryIcon
+              icon={item.category?.icon ?? 'Gift'}
+              color={item.category?.color ?? colors.textSecondary}
+              size={isBig ? 42 : 36}
+              bgColor={colors.surfaceAlt}
+            />
+            {isPaid && (
+              <Animated.View entering={ZoomIn.springify().damping(12)}>
+                <CheckCircle size={22} color={colors.success} weight="fill" />
+              </Animated.View>
+            )}
+          </View>
+          <Text
+            className="font-sans mt-2 font-semibold text-text-primary"
+            style={{
+              fontSize: isBig ? 17 : 15,
+              textDecorationLine: isPaid ? 'line-through' : 'none',
+            }}
+            numberOfLines={1}>
+            {item.name}
+          </Text>
+          <View className="mt-1 flex-row items-center justify-between">
+            <Text
+              className="font-sans font-bold text-text-primary"
+              style={{ fontSize: isBig ? 20 : 16 }}>
+              {formatMoney(item.amount)}
+            </Text>
+            {isBig && (
+              <Text className="font-sans text-xs text-text-secondary">
+                Día {item.dayOfMonth} de cada mes
+              </Text>
+            )}
+          </View>
+          <View className="mt-1.5 flex-row items-center justify-between">
+            {!isBig && (
+              <Text className="font-sans text-xs text-text-secondary">
+                Día {item.dayOfMonth}
+              </Text>
+            )}
+            <Text
+              className="font-sans text-xs font-semibold"
+              style={{ color: STATUS_COLOR[status] }}>
+              {STATUS_LABEL[status]}
+            </Text>
+          </View>
+        </Card>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 export default function FijosScreen() {
   const insets = useSafeAreaInsets();
@@ -197,68 +297,19 @@ export default function FijosScreen() {
             <View className="flex-row flex-wrap" style={{ marginHorizontal: -5 }}>
               {list.map((item) => {
                 const status = statusOf(item, now);
-                const isPaid = status === 'paid';
                 const isBig = item.amount >= maxAmount * 0.6;
                 return (
                   <View
                     key={item.id}
                     className="p-1.5"
                     style={{ width: isBig ? '100%' : '50%' }}>
-                    <Pressable
+                    <FixedExpenseCard
+                      item={item}
+                      status={status}
+                      isBig={isBig}
                       onPress={() => togglePaid(item)}
                       onLongPress={() => showOptions(item)}
-                      className="active:opacity-70">
-                      <Card
-                        style={{
-                          opacity: isPaid ? 0.45 : 1,
-                          minHeight: isBig ? 128 : 104,
-                        }}>
-                        <View className="flex-row items-start justify-between">
-                          <CategoryIcon
-                            icon={item.category?.icon ?? 'Gift'}
-                            color={item.category?.color ?? colors.textSecondary}
-                            size={isBig ? 42 : 36}
-                            bgColor={colors.surfaceAlt}
-                          />
-                          {isPaid && (
-                            <CheckCircle size={22} color={colors.success} weight="fill" />
-                          )}
-                        </View>
-                        <Text
-                          className="font-sans mt-2 font-semibold text-text-primary"
-                          style={{
-                            fontSize: isBig ? 17 : 15,
-                            textDecorationLine: isPaid ? 'line-through' : 'none',
-                          }}
-                          numberOfLines={1}>
-                          {item.name}
-                        </Text>
-                        <View className="mt-1 flex-row items-center justify-between">
-                          <Text
-                            className="font-sans font-bold text-text-primary"
-                            style={{ fontSize: isBig ? 20 : 16 }}>
-                            {formatMoney(item.amount)}
-                          </Text>
-                          {isBig && (
-                            <Text className="font-sans text-xs text-text-secondary">
-                              Día {item.dayOfMonth} de cada mes
-                            </Text>
-                          )}
-                        </View>
-                        <View className="mt-1.5 flex-row items-center justify-between">
-                          {!isBig && (
-                            <Text className="font-sans text-xs text-text-secondary">
-                              Día {item.dayOfMonth}
-                            </Text>
-                          )}
-                          <Text
-                            className="font-sans text-xs font-semibold"
-                            style={{ color: STATUS_COLOR[status] }}>
-                            {STATUS_LABEL[status]}
-                          </Text>
-                        </View>
-                      </Card>
-                    </Pressable>
+                    />
                   </View>
                 );
               })}
