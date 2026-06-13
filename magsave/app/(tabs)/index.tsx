@@ -145,19 +145,17 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Hero: presupuesto + acciones rápidas */}
+        {/* Hero: disponible + presupuesto + acciones rápidas */}
         <View className="px-6" style={{ marginTop: 28 }}>
           {loading ? (
-            <Skeleton height={190} radius={24} />
+            <Skeleton height={260} radius={24} />
           ) : (
             <HeroBalanceCard
-              label={
-                hasBudget
-                  ? `Presupuesto de ${monthYearLabel(monthYear)}`
-                  : 'Gastado este mes'
-              }
-              amount={hasBudget ? totalBudget : spent}
-              budget={hasBudget ? { spent, total: totalBudget } : undefined}
+              label={`Disponible en ${monthYearLabel(monthYear)}`}
+              amount={available}
+              budgetTotal={hasBudget ? totalBudget : undefined}
+              income={totals?.income ?? 0}
+              expense={spent}
               onAddExpense={() => txSheetRef.current?.open({ type: 'expense' })}
               onAddIncome={() => txSheetRef.current?.open({ type: 'income' })}
             />
@@ -193,48 +191,49 @@ export default function HomeScreen() {
           </ScrollView>
         )}
 
-        {/* Bloques de ingresos / gastos del mes + dona */}
-        <View className="flex-row gap-3 px-6" style={{ marginTop: 28 }}>
-          <Card style={{ flex: 1 }}>
-            <Text className="font-sans text-sm text-text-secondary">Ingresos</Text>
-            <Text
-              className="font-sans mt-1 text-lg font-bold"
-              style={{ color: colors.success }}>
-              {formatMoney(totals?.income ?? 0)}
-            </Text>
-            <Text className="font-sans mt-2 text-sm text-text-secondary">Gastos</Text>
-            <Text
-              className="font-sans mt-1 text-lg font-bold"
-              style={{ color: colors.danger }}>
-              {formatMoney(totals?.expense ?? 0)}
-            </Text>
-            {!loading && (
-              <>
-                <Text className="font-sans mt-2 text-sm text-text-secondary">
-                  Disponible
-                </Text>
-                <Text
-                  className="font-sans mt-1 text-lg font-bold"
-                  style={{ color: available < 0 ? colors.danger : colors.textPrimary }}>
-                  {formatMoney(available)}
-                </Text>
-              </>
-            )}
-          </Card>
-          {topCategories.length > 0 && (
-            <Card style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <DonutChart
-                data={topCategories.map((c) => ({ value: c.total, color: c.color }))}
-                size={110}
-                holeColor={colors.surface}
-                centerLabel={
-                  hasBudget ? `${Math.round(budgetProgress * 100)}%` : undefined
-                }
-                centerSublabel={hasBudget ? 'usado' : undefined}
-              />
+        {/* Dona de gastos por categoría, ancho completo con leyenda */}
+        {topCategories.length > 0 && (
+          <View className="px-6" style={{ marginTop: 24 }}>
+            <Card>
+              <Text className="font-sans text-base font-semibold text-text-primary">
+                Gastos por categoría
+              </Text>
+              <View className="mt-3 flex-row items-center gap-5">
+                <DonutChart
+                  data={topCategories.map((c) => ({ value: c.total, color: c.color }))}
+                  size={120}
+                  holeColor={colors.surface}
+                  centerLabel={
+                    hasBudget ? `${Math.round(budgetProgress * 100)}%` : undefined
+                  }
+                  centerSublabel={hasBudget ? 'usado' : undefined}
+                />
+                <View className="flex-1 gap-2">
+                  {topCategories.map((cat) => (
+                    <View key={`${cat.categoryId}`} className="flex-row items-center gap-2">
+                      <View
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: 5,
+                          backgroundColor: cat.color,
+                        }}
+                      />
+                      <Text
+                        className="font-sans flex-1 text-sm text-text-secondary"
+                        numberOfLines={1}>
+                        {cat.name}
+                      </Text>
+                      <Text className="font-sans text-sm font-semibold text-text-primary">
+                        {formatMoney(cat.total)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
             </Card>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* Próximos gastos fijos */}
         {upcoming.length > 0 && (
