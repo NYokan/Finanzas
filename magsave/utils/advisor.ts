@@ -74,8 +74,19 @@ export function buildAdvice(inputs: AdvisorInputs): Advice[] {
 function budgetPaceAdvice({ now, budget }: AdvisorInputs): Advice | null {
   const day = now.getDate();
   const { totalBudget, totalSpent } = budget;
-  // con menos de 3 días de mes la proyección es puro ruido
-  if (totalBudget <= 0 || totalSpent <= 0 || day < 3) return null;
+  if (day < 3) return null;
+
+  // Sin presupuesto pero con gastos → sugerir que lo configure
+  if (totalBudget <= 0) {
+    if (totalSpent <= 0) return null;
+    return {
+      id: 'pace',
+      icon: TrendUp,
+      title: 'Fija tu presupuesto',
+      body: `Ya llevas ${formatMoney(totalSpent)} gastados este mes. Configurar un presupuesto por categoría te ayuda a saber cuánto queda sin hacer cálculos.`,
+      tone: 'info',
+    };
+  }
 
   const lastDay = daysInMonth(now.getFullYear(), now.getMonth());
   const dailyRate = totalSpent / day;
@@ -160,7 +171,13 @@ function fixedWeightAdvice({
       tone: 'info',
     };
   }
-  return null;
+  return {
+    id: 'fixed-weight',
+    icon: House,
+    title: 'Gastos fijos saludables',
+    body: `Solo el ${pct}% de tus ingresos va a gastos fijos — muy por debajo del 50% recomendado. Tienes buen margen para ahorrar.`,
+    tone: 'win',
+  };
 }
 
 /** Gastos hormiga: ≥3 gastos chicos de la misma categoría en 7 días. */
