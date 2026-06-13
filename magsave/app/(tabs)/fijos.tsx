@@ -7,8 +7,6 @@ import Animated, {
   useSharedValue,
   withSequence,
   withSpring,
-  withTiming,
-  ZoomIn,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -70,7 +68,6 @@ function FixedExpenseCard({
   onLongPress: () => void;
 }) {
   const isPaid = status === 'paid';
-  const opacity = useSharedValue(isPaid ? 0.45 : 1);
   const scale = useSharedValue(1);
   const mounted = useRef(false);
 
@@ -79,44 +76,41 @@ function FixedExpenseCard({
       scale.value = withSequence(withSpring(0.96, { damping: 14 }), withSpring(1));
     }
     mounted.current = true;
-    opacity.value = withTiming(isPaid ? 0.45 : 1, { duration: 350 });
-  }, [isPaid, opacity, scale]);
+  }, [isPaid, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
     transform: [{ scale: scale.value }],
   }));
 
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} className="active:opacity-70">
       <Animated.View style={animatedStyle}>
-        <Card style={{ minHeight: isBig ? 128 : 104 }}>
-          <View className="flex-row items-start justify-between">
+        <Card
+          style={{
+            minHeight: isBig ? 128 : 104,
+            backgroundColor: isPaid ? colors.successDim : undefined,
+          }}>
+          <View className="flex-row items-start">
             <CategoryIcon
               icon={item.category?.icon ?? 'Gift'}
               color={item.category?.color ?? colors.textSecondary}
               size={isBig ? 42 : 36}
-              bgColor={colors.surfaceAlt}
+              bgColor={isPaid ? 'rgba(22,163,74,0.12)' : colors.surfaceAlt}
             />
-            {isPaid && (
-              <Animated.View entering={ZoomIn.springify().damping(12)}>
-                <CheckCircle size={22} color={colors.success} weight="fill" />
-              </Animated.View>
-            )}
           </View>
           <Text
             className="font-sans mt-2 font-semibold text-text-primary"
-            style={{
-              fontSize: isBig ? 17 : 15,
-              textDecorationLine: isPaid ? 'line-through' : 'none',
-            }}
+            style={{ fontSize: isBig ? 17 : 15 }}
             numberOfLines={1}>
             {item.name}
           </Text>
           <View className="mt-1 flex-row items-center justify-between">
             <Text
-              className="font-sans font-bold text-text-primary"
-              style={{ fontSize: isBig ? 20 : 16 }}>
+              className="font-sans font-bold"
+              style={{
+                fontSize: isBig ? 20 : 16,
+                color: isPaid ? colors.success : colors.textPrimary,
+              }}>
               {formatMoney(item.amount)}
             </Text>
             {isBig && (
@@ -131,11 +125,16 @@ function FixedExpenseCard({
                 Día {item.dayOfMonth}
               </Text>
             )}
-            <Text
-              className="font-sans text-xs font-semibold"
-              style={{ color: STATUS_COLOR[status] }}>
-              {STATUS_LABEL[status]}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              {isPaid && (
+                <CheckCircle size={12} color={STATUS_COLOR[status]} weight="fill" />
+              )}
+              <Text
+                className="font-sans text-xs font-semibold"
+                style={{ color: STATUS_COLOR[status] }}>
+                {STATUS_LABEL[status]}
+              </Text>
+            </View>
           </View>
         </Card>
       </Animated.View>
