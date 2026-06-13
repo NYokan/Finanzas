@@ -14,7 +14,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors, shadow } from '@/constants/colors';
-import { tabBarClearance } from '@/constants/layout';
+import { fabBottom, tabBarClearance } from '@/constants/layout';
 import type { GoalWithProgress } from '@/db/queries/savings';
 import { useSavingsGoals, useTotalSaved } from '@/hooks/useSavingsGoals';
 import { notifyGoalCompleted } from '@/utils/notifications';
@@ -134,8 +134,11 @@ export default function AhorroScreen() {
         style={({ pressed }) => [
           shadow,
           {
-            bottom: tabBarClearance(insets.bottom) - 24,
+            bottom: fabBottom(insets.bottom),
             right: 20,
+            // Por encima de la navbar flotante (elevation 8) en Android.
+            elevation: 12,
+            zIndex: 12,
             backgroundColor: colors.primary,
             transform: [{ scale: pressed ? 0.96 : 1 }],
           },
