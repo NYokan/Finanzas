@@ -13,8 +13,8 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Decisiones que no hay que romper
 
-- **Tema oscuro** (guía del usuario): fondo `#121212`, cards `#1E1E24`, morado neón `#7F56D9`/`#9D71FD`, azul `#47B0FF`, verde `#22C55E`. La paleta vive en `constants/colors.ts` y DEBE mantenerse en sincronía con `tailwind.config.js` (mismos valores). Los tintes para fondos de chips/cards son `primaryDim`/`successDim`/`dangerDim` — no hardcodear hexes claros en las pantallas.
-- **Navbar flotante**: tab bar absoluta (bottom 25, radius 40, solo íconos, pastilla morada activa) en `app/(tabs)/_layout.tsx`. TODA lista/scroll de pantalla necesita `paddingBottom: ~130-140` para que el navbar no tape contenido; los FABs van en `bottom: 110, right: 20`.
+- **Tema claro + rosa** (v3, guía del usuario): fondo `#F7F7F9`, cards blancas `#FFFFFF`, rosa de acento `#FF6A88` (`primary`), gradiente hero `#FF9A9E → #FECFEF` (`HERO_GRADIENT`), textos `#1C1C1E`/`#8E8E93`. La paleta vive en `constants/colors.ts` y DEBE mantenerse en sincronía con `tailwind.config.js` (mismos valores). Los tintes para fondos de chips/cards son `primaryDim`/`successDim`/`dangerDim`/`warningDim` — no hardcodear hexes en las pantallas. El rosa es la identidad de la app.
+- **Navbar flotante claro**: tab bar absoluta (bottom 25, radius 40, fondo blanco, ícono activo rosa `weight="fill"` con subrayado 16×3 y label Inter 10px — SIN pastilla) en `app/(tabs)/_layout.tsx`. TODA lista/scroll de pantalla necesita `paddingBottom: ~130-140` para que el navbar no tape contenido; los FABs van en `bottom: 110, right: 20`. El Home ya no tiene FAB: las acciones viven en la `HeroBalanceCard`.
 - **Scrollables dentro de bottom sheets**: usar `ScrollView` de `react-native-gesture-handler` (los de react-native no responden al gesto dentro de @gorhom/bottom-sheet).
 
 - **Gráficos: react-native-gifted-charts** (`DonutChart` y `MonthlyBars` en `components/charts/`). victory-native fue eliminado (causaba el crash de Reportes en el APK). gifted-charts usa `expo-linear-gradient` como fallback de gradiente — no instalar `react-native-linear-gradient`.
@@ -43,36 +43,27 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Pendientes
 
-- [ ] **Validar el rediseño completo en dispositivo** (nuevo APK): Reportes sin crash, scrolls de sheets, fuente Inter, navbar flotante sin tapar contenido.
+- [ ] **Validar la v3 completa en dispositivo** (APK nuevo): tema claro+rosa, hero card, navbar con subrayado, fix del gráfico de barras (con 12 meses), metas sin emojis, consejos, chips de monto rápido. También lo arrastrado de v2: Reportes sin crash, scrolls de sheets, fuente Inter.
 - [ ] **Decisión Tamagui**: descartado por ahora (reemplazaría NativeWind; el rediseño se logró sin él). Retomar solo si el usuario insiste.
 
 ---
 
-# PRÓXIMA VERSIÓN (v3) — feedback de la 2ª prueba en dispositivo (12-jun-2026, build `caf74475`)
+# v3 — EJECUTADA (12-jun-2026, commits bc3c099…) — feedback de la 2ª prueba en dispositivo (build `caf74475`)
 
 ## Bugs reportados y diagnosticados
 
-- [ ] **El gráfico de barras de Reportes se ve mal (overflow)**. Diagnóstico hecho: en `components/charts/MonthlyBars.tsx` el ancho del plot es `Dimensions.width − 88`, pero gifted-charts le SUMA el `yAxisLabelWidth` (42px); la Card dispone solo de `pantalla − 72` (padding 20×2 de pantalla + 16×2 de card) → el chart desborda ~26px a la derecha y corta barras/labels. **Fix**: `width = Dimensions.width − 72 − 42 − 16` (≈ `−130`) y recalcular `barWidth` con ese ancho. Verificar también con 12 meses (24 barras).
-- [ ] **Grid de Fijos: `minHeight` invertido** (encontrado en revisión de código, `app/(tabs)/fijos.tsx`): las cards grandes tienen `minHeight: 104` y las chicas `128` — debería ser al revés (grande ≥ chica).
+- [x] **El gráfico de barras de Reportes se ve mal (overflow)** — fix aplicado en `MonthlyBars.tsx`: `width = Dimensions.width − 130` (72 de layout + 42 del eje Y que gifted-charts SUMA al plot + margen). Pendiente verificar en dispositivo con 12 meses (24 barras).
+- [x] **Grid de Fijos: `minHeight` invertido** — ahora `isBig ? 128 : 104`.
 
 ## Cambios pedidos
 
-- [ ] **Quitar los emojis de la página de metas de ahorro**: eliminar el grid de emojis y la fila de "sugeridos" del `GoalSheet`; donde estaban, dejar las opciones de TEXTO (Viaje, Emergencias, Regalo, Casa, Auto, Tecnología...). El campo `emoji` de la tabla puede seguir guardando un valor por defecto (p.ej. derivado del preset) pero la UI no muestra picker de emojis. Revisar también el protagonismo del emoji en las cards de meta del tab Ahorro.
+- [x] **Quitar los emojis de la página de metas de ahorro** — `GoalSheet` sin grid de emojis ni sugeridos (presets de TEXTO); el campo `emoji` (not null) se deriva del preset o usa `'🎯'` por defecto, sin UI. Cards de Ahorro y `GoalDetailSheet` sin emoji protagonista; el EmptyState de Ahorro usa el chanchito de Phosphor.
 
-## Recomendaciones económicas (sin servicios de pago)
+## Recomendaciones económicas — HECHO (motor de reglas 100% local)
 
-Pedido del usuario: dar recomendaciones económicas gratis. **Enfoque elegido: motor de reglas 100% local** (calza con "sin nube, sin cuenta" y cuesta $0) — NO usar APIs de LLM (ni siquiera free tier: requieren key, internet y enviar datos financieros afuera). Ideas de reglas sobre los datos de SQLite, mostrables como cards de "Consejos" en Reportes o Home:
+**Implementado en `utils/advisor.ts`** (funciones puras, guards de datos suficientes, DB vacía → `[]`) + `hooks/useAdvice.ts` (junta los agregados de SQLite) + `components/AdviceCard.tsx`. UI: sección "Consejos para ti" en Reportes y el primer consejo como banner compacto en Home. Reglas: ritmo vs presupuesto (proyección lineal → "te pasas el día N"), delta mes a mes por categoría (≥20% sobre TODO el mes anterior), peso de fijos vs ingresos (50/30/20), gastos hormiga (≥3 gastos <$5.000 misma categoría en 7 días), proyección de meta (promedio semanal desde createdAt → ETA vs deadline), racha (≥7 días). NO usar APIs de LLM (requieren key, internet y enviar datos financieros afuera) — decisión de diseño, no limitación.
 
-- Comparación mes a mes por categoría: "En Comida llevas un 30% más que el mes pasado".
-- Ritmo de gasto vs presupuesto: "A este ritmo te pasas del presupuesto el día 24".
-- Proyección de metas: "Guardando $5.000 a la semana, completas 'Viaje' en marzo".
-- Peso de los fijos: "Tus gastos fijos son el 45% de tus ingresos del mes" (regla 50/30/20 como referencia).
-- Racha y refuerzo positivo: "Llevas 12 días registrando — los que registran gastan menos 😉".
-- Detección de hormiga: top 3 de gastos chicos repetidos del mes (misma nota/categoría, monto < umbral).
-
-Implementación: módulo `utils/advisor.ts` con funciones puras que reciben los agregados existentes (`getMonthlySeries`, `getExpensesByCategory`, `getBudgetSummary`, metas) y devuelven una lista de `{ icon, title, body, tone }`; UI como carrusel de cards.
-
-## Rediseño v3 — MODO CLARO + ROSA (guía del usuario, para la próxima versión)
+## Rediseño v3 — MODO CLARO + ROSA (guía del usuario) — IMPLEMENTADO
 
 ### Paleta nueva (reemplaza el tema oscuro; actualizar `constants/colors.ts` + `tailwind.config.js` en sincronía)
 - Fondo app: `#F7F7F9` o `#F2F2F6` (gris muy claro, NO blanco puro).
@@ -103,9 +94,9 @@ El usuario compartió un mockup fintech de **modo claro** que aporta el LAYOUT (
 
 ---
 
-## PLAN DE EJECUCIÓN v3 (detallado — para la próxima sesión)
+## PLAN DE EJECUCIÓN v3 — EJECUTADO COMPLETO (12-jun-2026, un commit por fase)
 
-Orden diseñado para commitear por fase y poder cortar en cualquier punto con la app sana. Después de CADA fase: `npx tsc --noEmit` limpio.
+Orden diseñado para commitear por fase y poder cortar en cualquier punto con la app sana. Después de CADA fase: `npx tsc --noEmit` limpio. Todas las fases (0-7) quedaron hechas; los detalles de abajo se conservan como referencia de las decisiones.
 
 ### Fase 0 — Bugfixes (15 min, commit propio)
 1. `components/charts/MonthlyBars.tsx`: `width = Dimensions.get('window').width - 130` (72 de layout + 42 de eje Y + margen) y recalcular `barWidth` con ese ancho. Probar mentalmente con 3/6/12 meses (6/12/24 barras).
@@ -185,7 +176,7 @@ Optimización opcional: importar los íconos de phosphor de forma individual (`p
 
 No hay backend y es **a propósito** (spec original: "Sin cuenta, sin nube"). Toda la data vive en SQLite en el teléfono. NO crear Supabase/Firebase salvo que el usuario pida explícitamente sincronización multi-dispositivo o respaldo en la nube; en ese caso, discutir primero el alcance (auth, migración de datos locales, conflictos).
 
-## Rediseño front pendiente — guía paso a paso (del usuario, 12-jun-2026)
+## Rediseño front v2 (tema oscuro) — HISTÓRICO, superseded por el tema claro v3
 
 > Nota: la primera versión de la guía mencionaba lucide, pero el usuario confirmó después (su ejemplo del navbar usa Phosphor con `weight`) — **se mantiene phosphor-react-native**.
 
