@@ -13,6 +13,7 @@ export const colors = {
   bg: '#F7F7F9', // fondo principal, gris muy claro (no blanco puro)
   surface: '#FFFFFF', // cards blancas
   surfaceAlt: '#F0F0F0', // círculos de íconos, elementos sobre cards
+  cream: '#FFF6E9', // crema — fondos cálidos pastel
   textPrimary: '#1C1C1E', // casi negro — títulos y montos
   textSecondary: '#8E8E93', // gris medio — subtítulos y fechas
   border: '#ECECF0',
@@ -23,6 +24,16 @@ export const colors = {
 
 // Gradiente de la tarjeta principal del Home (rosa melocotón → rosa suave)
 export const HERO_GRADIENT = ['#FF9A9E', '#FECFEF'] as const;
+
+// Fondos pastel para grids/cards destacadas (rosa, durazno, crema, menta, lila, cielo)
+export const PASTELS = [
+  '#FFE9EE',
+  '#FFF1E6',
+  '#FFF6E3',
+  '#EAF6EF',
+  '#F2EDFB',
+  '#EAF2FA',
+] as const;
 
 export const shadow = {
   shadowColor: '#000',
