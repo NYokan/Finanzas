@@ -12,7 +12,9 @@ interface Props {
 
 /** Barras agrupadas de ingresos (verde) vs gastos (coral) por mes — gifted-charts. */
 export function MonthlyBars({ data }: Props) {
-  const width = Dimensions.get('window').width - 88;
+  // pantalla − 72 de layout (padding 20×2 + card 16×2) − 42 del eje Y − 16 de margen:
+  // gifted-charts suma yAxisLabelWidth al width del plot, así que hay que descontarlo.
+  const width = Dimensions.get('window').width - 130;
   const groups = data.length || 1;
   // dos barras por mes + espacio del grupo
   const barWidth = Math.max(5, Math.floor(width / groups / 2) - 9);

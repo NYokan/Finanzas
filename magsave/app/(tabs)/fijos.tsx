@@ -211,7 +211,7 @@ export default function FijosScreen() {
                       <Card
                         style={{
                           opacity: isPaid ? 0.45 : 1,
-                          minHeight: isBig ? 104 : 128,
+                          minHeight: isBig ? 128 : 104,
                         }}>
                         <View className="flex-row items-start justify-between">
                           <CategoryIcon
