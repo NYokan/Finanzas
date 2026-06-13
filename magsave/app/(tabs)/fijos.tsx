@@ -82,25 +82,37 @@ function FixedExpenseCard({
     transform: [{ scale: scale.value }],
   }));
 
+  // Paleta del estado pagado: la card "baja" al nivel del fondo sin sombra,
+  // los textos se apagan a gris claro, solo el check verde mantiene vivacidad.
+  const PAID_TEXT = '#B0B0B0';
+  const paidCardStyle = isPaid
+    ? {
+        backgroundColor: '#F9F9FB',
+        elevation: 0,
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        shadowColor: 'transparent' as const,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+      }
+    : undefined;
+
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} className="active:opacity-70">
       <Animated.View style={animatedStyle}>
-        <Card
-          style={{
-            minHeight: isBig ? 128 : 104,
-            backgroundColor: isPaid ? colors.successDim : undefined,
-          }}>
-          <View className="flex-row items-start">
+        <Card style={{ minHeight: isBig ? 128 : 104, ...paidCardStyle }}>
+          {/* Ícono con opacidad reducida cuando pagado; el resto de la card no se apaga */}
+          <View style={{ opacity: isPaid ? 0.4 : 1, alignSelf: 'flex-start' }}>
             <CategoryIcon
               icon={item.category?.icon ?? 'Gift'}
               color={item.category?.color ?? colors.textSecondary}
               size={isBig ? 42 : 36}
-              bgColor={isPaid ? 'rgba(22,163,74,0.12)' : colors.surfaceAlt}
+              bgColor={colors.surfaceAlt}
             />
           </View>
           <Text
-            className="font-sans mt-2 font-semibold text-text-primary"
-            style={{ fontSize: isBig ? 17 : 15 }}
+            className="font-sans mt-2 font-semibold"
+            style={{ fontSize: isBig ? 17 : 15, color: isPaid ? PAID_TEXT : colors.textPrimary }}
             numberOfLines={1}>
             {item.name}
           </Text>
@@ -109,19 +121,23 @@ function FixedExpenseCard({
               className="font-sans font-bold"
               style={{
                 fontSize: isBig ? 20 : 16,
-                color: isPaid ? colors.success : colors.textPrimary,
+                color: isPaid ? PAID_TEXT : colors.textPrimary,
               }}>
               {formatMoney(item.amount)}
             </Text>
             {isBig && (
-              <Text className="font-sans text-xs text-text-secondary">
+              <Text
+                className="font-sans text-xs"
+                style={{ color: isPaid ? PAID_TEXT : colors.textSecondary }}>
                 Día {item.dayOfMonth} de cada mes
               </Text>
             )}
           </View>
           <View className="mt-1.5 flex-row items-center justify-between">
             {!isBig && (
-              <Text className="font-sans text-xs text-text-secondary">
+              <Text
+                className="font-sans text-xs"
+                style={{ color: isPaid ? PAID_TEXT : colors.textSecondary }}>
                 Día {item.dayOfMonth}
               </Text>
             )}

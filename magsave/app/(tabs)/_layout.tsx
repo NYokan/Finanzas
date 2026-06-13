@@ -7,11 +7,17 @@ import {
   Repeat,
   type Icon,
 } from 'phosphor-react-native';
-import { View } from 'react-native';
+import { Dimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '@/constants/colors';
 
 const INACTIVE = '#B0B0B5';
+
+// Navbar flotante: 76 % del ancho de la pantalla (≈12 % de margen en cada lado)
+const { width: SCREEN_W } = Dimensions.get('window');
+const NAV_W = Math.round(SCREEN_W * 0.76);
+const NAV_LEFT = Math.round((SCREEN_W - NAV_W) / 2);
 
 function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolean }) {
   return (
@@ -21,7 +27,6 @@ function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolea
         color={focused ? colors.primary : INACTIVE}
         weight={focused ? 'fill' : 'regular'}
       />
-      {/* Indicador subrayado del tab activo */}
       <View
         style={{
           marginTop: 3,
@@ -36,6 +41,7 @@ function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolea
 }
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
@@ -50,9 +56,9 @@ export default function TabsLayout() {
         },
         tabBarStyle: {
           position: 'absolute',
-          bottom: 24,
-          left: 32,
-          right: 32,
+          bottom: insets.bottom + 16,
+          left: NAV_LEFT,
+          width: NAV_W,
           height: 64,
           borderRadius: 32,
           backgroundColor: colors.surface,
