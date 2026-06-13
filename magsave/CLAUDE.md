@@ -43,14 +43,14 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Pendientes
 
-- [ ] **Ejecutar el PLAN v4** (abajo) — feedback de la 3ª prueba en dispositivo ya diagnosticado.
+- [ ] **Validar la v4 en dispositivo** (APK nuevo): paleta pastel (dona y categorías incluidas — los colores se re-sincronizan al arrancar), navbar angosta, hero con disponible + presupuesto + botones glass, Reportes sin gráfico de barras y con grid pastel, animación al pagar fijos, carrusel de consejos en Home.
 - [ ] **Decisión Tamagui**: descartado por ahora (reemplazaría NativeWind; el rediseño se logró sin él). Retomar solo si el usuario insiste.
 
 ---
 
-# PRÓXIMA VERSIÓN (v4) — feedback de la 3ª prueba en dispositivo (12-jun-2026, build `b7e5b012`)
+# v4 — EJECUTADA (12-jun-2026, commits 3d6c6e7…6aaae36, un commit por fase) — feedback de la 3ª prueba (build `b7e5b012`)
 
-La v3 se instaló y probó. Feedback del usuario, diagnosticado:
+La v3 se instaló y probó. Feedback del usuario, diagnosticado (todo atendido):
 
 1. **Navbar más angosta**: hoy `left/right: 20`; se ve muy ancha — falta margen lateral.
 2. **Cards del Home "cortadas" y con mucho espacio entre sí**: el carrusel de metric cards corta las sombras en los bordes del ScrollView (Android recorta la elevation si no hay padding vertical en el contentContainer) y el `gap: 12` + cards de 140 se sienten sueltas.
@@ -62,7 +62,7 @@ La v3 se instaló y probó. Feedback del usuario, diagnosticado:
 8. **Más consejos en la página principal** (hoy solo se muestra 1).
 9. **Toda la app en paleta blanco / rosa / crema / pasteles** — revisión global de tonalidades.
 
-## PLAN DE EJECUCIÓN v4 (commit por fase; `npx tsc --noEmit` limpio tras cada una)
+## PLAN DE EJECUCIÓN v4 — EJECUTADO COMPLETO (fases 1-7; detalles conservados como referencia)
 
 > expo-blur y react-native-reanimated YA están instalados (no agregar deps).
 
