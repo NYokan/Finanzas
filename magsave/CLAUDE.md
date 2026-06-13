@@ -77,11 +77,16 @@ La v3 se instaló y probó. Feedback del usuario, diagnosticado:
 2. Carrusel del Home: `contentContainerStyle` con `paddingVertical: 10` (las sombras dejan de cortarse), `gap: 12 → 8`, cards `width: 140 → 150`.
 3. Revisar el grid de Fijos y el de Reportes con el mismo criterio (sombra no cortada, gaps 8-10).
 
-### Fase 3 — Hero card v2 (Home)
-1. `HeroBalanceCard`: el monto grande pasa a ser **lo gastado este mes** (siempre); debajo, línea explícita "Presupuesto de junio: $X" cuando exista (en blanco translúcido) y la barra de avance en el panel interior como hoy.
-2. Integrar dentro de la hero una fila de 3 mini-columnas **Ingresos / Gastos / Disponible** (labels translúcidos, montos blancos) — reemplaza la card blanca de Ingresos/Gastos/Disponible de abajo.
-3. Botones "Gasto"/"Ingreso" **translúcidos**: `backgroundColor: 'rgba(255,255,255,0.25)'`, `borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)'`, texto e íconos blancos.
-4. La card de la dona pasa a ancho completo con leyenda de top categorías al lado (nombre + monto), colores nuevos de Fase 1.
+### Fase 3 — Hero card v2 (Home) — layout CONFIRMADO con el usuario (12-jun-2026)
+Decisión del usuario: **todo en UNA sola card rosa** (desaparece la card blanca de Ingresos/Gastos/Disponible) y el monto gigante es **EL DISPONIBLE**.
+1. `HeroBalanceCard`, de arriba hacia abajo:
+   - Label "Disponible en junio" + **monto grande = disponible** (`ingresos − gastos − fijos activos`, el `available` que ya calcula el Home). Si es negativo, mantenerlo legible (blanco, sin rojo sobre rosa).
+   - Línea explícita "Presupuesto del mes: $X" en blanco translúcido (solo si hay presupuesto).
+   - Fila de 2 mini-columnas **Ingresos / Gastos** (labels translúcidos, montos blancos).
+   - Panel interior translúcido con "Gastado este mes $Y" + barra de avance vs presupuesto (como hoy).
+   - Botones "Gasto"/"Ingreso" **translúcidos** (glass): `backgroundColor: 'rgba(255,255,255,0.25)'`, `borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)'`, texto e íconos blancos.
+2. El Home ya no muestra la card blanca de Ingresos/Gastos/Disponible; la hero necesita `useMonthTotals` + `useActiveFixedTotal` como props (el cálculo se queda en la pantalla).
+3. La card de la dona pasa a ancho completo con leyenda de top categorías al lado (nombre + monto), colores nuevos de Fase 1.
 
 ### Fase 4 — Reportes: borrar barras + grid pastel con glass
 1. **Eliminar** `components/charts/MonthlyBars.tsx`, su Card y el selector de período (los insights pasan a ventana fija: `useMonthlySeries(6)`).
