@@ -162,11 +162,19 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Primer consejo del motor local, como banner discreto */}
+        {/* Consejos del motor local (hasta 3, deslizables) */}
         {(advice ?? []).length > 0 && (
-          <View className="px-6" style={{ marginTop: 20 }}>
-            <AdviceCard advice={(advice ?? [])[0]} compact />
-          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 12 }}
+            contentContainerStyle={{ gap: 8, paddingHorizontal: 24, paddingVertical: 8 }}>
+            {(advice ?? []).slice(0, 3).map((a) => (
+              <View key={a.id} style={{ width: 300 }}>
+                <AdviceCard advice={a} compact />
+              </View>
+            ))}
+          </ScrollView>
         )}
 
         {/* Carrusel de categorías del mes */}
