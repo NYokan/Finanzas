@@ -11,20 +11,25 @@ import { View } from 'react-native';
 
 import { colors } from '@/constants/colors';
 
-const INACTIVE = '#8E8E93';
+const INACTIVE = '#B0B0B5';
 
 function TabIcon({ icon: IconComponent, focused }: { icon: Icon; focused: boolean }) {
   return (
-    <View
-      style={{
-        backgroundColor: focused ? colors.primary : 'transparent',
-        padding: 12,
-        borderRadius: 24,
-      }}>
+    <View style={{ alignItems: 'center' }}>
       <IconComponent
         size={24}
-        color={focused ? '#FFFFFF' : INACTIVE}
+        color={focused ? colors.primary : INACTIVE}
         weight={focused ? 'fill' : 'regular'}
+      />
+      {/* Indicador subrayado del tab activo */}
+      <View
+        style={{
+          marginTop: 3,
+          width: 16,
+          height: 3,
+          borderRadius: 1.5,
+          backgroundColor: focused ? colors.primary : 'transparent',
+        }}
       />
     </View>
   );
@@ -35,7 +40,14 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: INACTIVE,
+        tabBarLabelStyle: {
+          fontFamily: 'Inter',
+          fontSize: 10,
+          fontWeight: '500',
+        },
         tabBarStyle: {
           position: 'absolute',
           bottom: 25,
@@ -45,14 +57,14 @@ export default function TabsLayout() {
           borderRadius: 40,
           backgroundColor: colors.surface,
           borderTopWidth: 0,
-          elevation: 0,
+          elevation: 2,
           shadowColor: '#000',
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
+          shadowOpacity: 0.06,
+          shadowRadius: 12,
           shadowOffset: { width: 0, height: 4 },
         },
         tabBarItemStyle: {
-          paddingTop: 11,
+          paddingTop: 12,
         },
         sceneStyle: { backgroundColor: colors.bg },
       }}>
