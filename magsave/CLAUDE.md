@@ -43,8 +43,66 @@ App de finanzas personales en React Native/Expo (regalo personalizado para Magda
 
 ## Pendientes
 
-- [ ] **Validar la v3 completa en dispositivo** (APK nuevo): tema claro+rosa, hero card, navbar con subrayado, fix del gráfico de barras (con 12 meses), metas sin emojis, consejos, chips de monto rápido. También lo arrastrado de v2: Reportes sin crash, scrolls de sheets, fuente Inter.
+- [ ] **Ejecutar el PLAN v4** (abajo) — feedback de la 3ª prueba en dispositivo ya diagnosticado.
 - [ ] **Decisión Tamagui**: descartado por ahora (reemplazaría NativeWind; el rediseño se logró sin él). Retomar solo si el usuario insiste.
+
+---
+
+# PRÓXIMA VERSIÓN (v4) — feedback de la 3ª prueba en dispositivo (12-jun-2026, build `b7e5b012`)
+
+La v3 se instaló y probó. Feedback del usuario, diagnosticado:
+
+1. **Navbar más angosta**: hoy `left/right: 20`; se ve muy ancha — falta margen lateral.
+2. **Cards del Home "cortadas" y con mucho espacio entre sí**: el carrusel de metric cards corta las sombras en los bordes del ScrollView (Android recorta la elevation si no hay padding vertical en el contentContainer) y el `gap: 12` + cards de 140 se sienten sueltas.
+3. **Colores del gráfico (dona) no van con la paleta**: los slices usan `categories.color` de SQLite, que aún trae los colores saturados del seed v1 (`#E8593C`, `#378ADD`...). OJO: el seed solo inserta con tabla vacía → hay que ACTUALIZAR los colores de las categorías default existentes al arrancar.
+4. **Hero card**: falta decir explícitamente cuál es el presupuesto del mes; el usuario quiere lo de Ingresos/Gastos/Presupuesto integrado/destacado en la card de "gastado este mes", y los botones Gasto/Ingreso **translúcidos** (no blancos sólidos).
+5. **Fijos**: mejorar la animación/interacción al marcar pagado (hoy el cambio es seco, sin transición).
+6. **Gráfico de barras de Reportes: BORRARLO** — sigue con bug y el usuario no lo usa.
+7. **Grid de insights de Reportes con más énfasis**: fondos pastel (rositas, crema y similares) + glassmorphism.
+8. **Más consejos en la página principal** (hoy solo se muestra 1).
+9. **Toda la app en paleta blanco / rosa / crema / pasteles** — revisión global de tonalidades.
+
+## PLAN DE EJECUCIÓN v4 (commit por fase; `npx tsc --noEmit` limpio tras cada una)
+
+> expo-blur y react-native-reanimated YA están instalados (no agregar deps).
+
+### Fase 1 — Paleta pastel global + colores de categorías
+1. `constants/colors.ts` + `tailwind.config.js` (en sincronía): agregar `cream: '#FFF6E9'` y exportar `PASTELS` (fondos para grids/cards): `['#FFE9EE', '#FFF1E6', '#FFF6E3', '#EAF6EF', '#F2EDFB', '#EAF2FA']` (rosa, durazno, crema, menta, lila, cielo).
+2. `db/seed.ts`: nueva paleta de categorías, pastel pero legible como acento sobre blanco (sirven de slice de dona y de color de ícono): Comida `#F2789F`, Transporte `#F0A884`, Hogar `#E5B769`, Salud `#C49BD6`, Ocio `#F6C56C`, Ropa `#F08FB8`, Mascotas `#C9A284`, Educación `#9FB8E0`, Trabajo `#8FC9A8`, Otro `#B8B0A8`.
+3. `seedDatabase()`: además del insert inicial, hacer `UPDATE` del color de las categorías `isDefault = 1` (match por nombre) para que las instalaciones existentes tomen la paleta nueva. La dona y los íconos se arreglan solos con esto.
+4. Revisión global de pantallas/sheets con la paleta (gastos, fijos, ahorro, onboarding): nada de colores saturados sueltos; tintes siempre desde tokens (`*Dim`, `PASTELS`, `cream`).
+
+### Fase 2 — Navbar angosta + cards cortadas
+1. `app/(tabs)/_layout.tsx`: `left/right: 20 → 32`, `bottom: 24`, `height: 70 → 64` (revisar que ícono+subrayado+label respiren).
+2. Carrusel del Home: `contentContainerStyle` con `paddingVertical: 10` (las sombras dejan de cortarse), `gap: 12 → 8`, cards `width: 140 → 150`.
+3. Revisar el grid de Fijos y el de Reportes con el mismo criterio (sombra no cortada, gaps 8-10).
+
+### Fase 3 — Hero card v2 (Home)
+1. `HeroBalanceCard`: el monto grande pasa a ser **lo gastado este mes** (siempre); debajo, línea explícita "Presupuesto de junio: $X" cuando exista (en blanco translúcido) y la barra de avance en el panel interior como hoy.
+2. Integrar dentro de la hero una fila de 3 mini-columnas **Ingresos / Gastos / Disponible** (labels translúcidos, montos blancos) — reemplaza la card blanca de Ingresos/Gastos/Disponible de abajo.
+3. Botones "Gasto"/"Ingreso" **translúcidos**: `backgroundColor: 'rgba(255,255,255,0.25)'`, `borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)'`, texto e íconos blancos.
+4. La card de la dona pasa a ancho completo con leyenda de top categorías al lado (nombre + monto), colores nuevos de Fase 1.
+
+### Fase 4 — Reportes: borrar barras + grid pastel con glass
+1. **Eliminar** `components/charts/MonthlyBars.tsx`, su Card y el selector de período (los insights pasan a ventana fija: `useMonthlySeries(6)`).
+2. Grid de insights con énfasis: cada card con fondo `PASTELS[i % PASTELS.length]`, borde glass `rgba(255,255,255,0.65)`, montos en `textPrimary`. Probar `BlurView` de expo-blur (intensity baja) y quedarse con él solo si aporta sobre fondo plano; el look glass se logra igual con translúcido + borde.
+3. "Consejos para ti" y presupuestos se mantienen tal cual.
+
+### Fase 5 — Animación al pagar un fijo
+`app/(tabs)/fijos.tsx` con reanimated (ya instalado): card como `Animated.View` con `LayoutAnimation`/`Layout.springify()` para el reorden, opacity animada `withTiming(0.45)` al pagar (no salto seco), check `CheckCircle` con entrada `ZoomIn` y un pulso de escala (0.97 → 1 spring) al confirmar. Mantener el Alert de confirmación y los haptics actuales.
+
+### Fase 6 — Más consejos en el Home
+El banner único pasa a **carrusel horizontal** de hasta 3 `AdviceCard` compactas (`width ≈ 300`, `gap: 8`, paddingHorizontal 24). En Reportes se siguen mostrando todos.
+
+### Fase 7 — Verificación y entrega
+1. `npx tsc --noEmit` + `npx expo export --platform android --output-dir dist-check` (borrar después).
+2. Commit + push; `npx eas-cli build --platform android --profile preview --non-interactive --no-wait`; monitorear `build:view <id> --json`; entregar link del APK.
+3. Actualizar este archivo (marcar v4) y la memoria.
+
+### Notas
+- El monto "gastado este mes" del hero ya existe (`budget.totalSpent` cubre todos los gastos del mes, no solo los presupuestados).
+- Al borrar MonthlyBars revisar imports muertos (`Pill` del selector, `abbreviateMoney` si queda sin uso).
+- Las reglas transversales de siempre: `font-sans` en Texts nuevos, scrollables de gesture-handler en sheets, `paddingBottom ≥130` en listas.
 
 ---
 
