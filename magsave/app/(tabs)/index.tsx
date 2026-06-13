@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Bell, Plus, TrendDown, TrendUp } from 'phosphor-react-native';
+import { Bell } from 'phosphor-react-native';
 import { useRef } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,19 +10,14 @@ import { categoryIconComponent } from '@/components/CategoryIcon';
 import { TransactionItem } from '@/components/TransactionItem';
 import { DonutChart } from '@/components/charts/DonutChart';
 import {
-  AddActionSheet,
-  type AddActionSheetRef,
-} from '@/components/sheets/AddActionSheet';
-import {
   TransactionSheet,
   type TransactionSheetRef,
 } from '@/components/sheets/TransactionSheet';
-import { BalanceHeader } from '@/components/ui/BalanceHeader';
 import { Card } from '@/components/ui/Card';
 import { GlassMetricCard } from '@/components/ui/GlassMetricCard';
-import { ProgressBar, budgetColor } from '@/components/ui/ProgressBar';
+import { HeroBalanceCard } from '@/components/ui/HeroBalanceCard';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { colors, shadow } from '@/constants/colors';
+import { colors } from '@/constants/colors';
 import type { FixedExpenseWithStatus } from '@/db/queries/fixedExpenses';
 import { useBudgetSummary } from '@/hooks/useBudgets';
 import { useActiveFixedTotal, useFixedExpenses } from '@/hooks/useFixedExpenses';
@@ -82,7 +77,6 @@ export default function HomeScreen() {
   const { data: fixedExpenses } = useFixedExpenses(monthYear);
   const { data: recent, loading: loadingRecent } = useRecentTransactions(5);
 
-  const addSheetRef = useRef<AddActionSheetRef>(null);
   const txSheetRef = useRef<TransactionSheetRef>(null);
 
   const loading = loadingTotals || loadingBudget;
@@ -90,7 +84,6 @@ export default function HomeScreen() {
   const totalBudget = budget?.totalBudget ?? 0;
   const hasBudget = totalBudget > 0;
   const budgetProgress = hasBudget ? spent / totalBudget : 0;
-  const remaining = totalBudget - spent;
   const available =
     (totals?.income ?? 0) - (totals?.expense ?? 0) - (fixedTotal ?? 0);
   const upcoming = upcomingFixedExpenses(fixedExpenses ?? []);
@@ -100,7 +93,7 @@ export default function HomeScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const granted = await ensureNotificationPermissions();
     Alert.alert(
-      granted ? 'Recordatorios activos 💜' : 'Notificaciones apagadas',
+      granted ? 'Recordatorios activos 💗' : 'Notificaciones apagadas',
       granted
         ? 'Te aviso un día antes de cada gasto fijo.'
         : 'Actívalas en los ajustes del teléfono para no perderte ningún vencimiento.',
@@ -116,7 +109,7 @@ export default function HomeScreen() {
         }}
         showsVerticalScrollIndicator={false}>
         {/* Saludo */}
-        <View className="flex-row items-center justify-between px-5">
+        <View className="flex-row items-center justify-between px-6">
           <View className="flex-row items-center gap-3">
             <LinearGradient
               colors={[colors.primaryLight, colors.primary]}
@@ -149,57 +142,22 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Presupuesto + dona */}
-        <View className="mt-7 px-5">
+        {/* Hero: presupuesto + acciones rápidas */}
+        <View className="px-6" style={{ marginTop: 28, marginBottom: 32 }}>
           {loading ? (
-            <Skeleton height={80} radius={20} />
+            <Skeleton height={190} radius={24} />
           ) : (
-            <BalanceHeader
+            <HeroBalanceCard
               label={
                 hasBudget
                   ? `Presupuesto de ${monthYearLabel(monthYear)}`
                   : 'Gastado este mes'
               }
               amount={hasBudget ? totalBudget : spent}
-              badge={
-                hasBudget
-                  ? remaining >= 0
-                    ? {
-                        text: `Quedan ${formatMoney(remaining)}`,
-                        color: budgetColor(budgetProgress),
-                      }
-                    : {
-                        text: `Te pasaste por ${formatMoney(-remaining)}`,
-                        color: colors.danger,
-                        bg: colors.dangerDim,
-                      }
-                  : {
-                      text: 'Define presupuestos en Reportes',
-                    }
-              }
-              right={
-                topCategories.length > 0 ? (
-                  <DonutChart
-                    data={topCategories.map((c) => ({ value: c.total, color: c.color }))}
-                    size={110}
-                    holeColor={colors.bg}
-                    centerLabel={
-                      hasBudget ? `${Math.round(budgetProgress * 100)}%` : undefined
-                    }
-                    centerSublabel={hasBudget ? 'usado' : undefined}
-                  />
-                ) : undefined
-              }
+              budget={hasBudget ? { spent, total: totalBudget } : undefined}
+              onAddExpense={() => txSheetRef.current?.open({ type: 'expense' })}
+              onAddIncome={() => txSheetRef.current?.open({ type: 'income' })}
             />
-          )}
-          {!loading && hasBudget && (
-            <View className="mt-3">
-              <ProgressBar
-                progress={budgetProgress}
-                color={budgetColor(budgetProgress)}
-                trackColor={colors.surfaceAlt}
-              />
-            </View>
           )}
         </View>
 
@@ -208,8 +166,7 @@ export default function HomeScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="mt-6"
-            contentContainerStyle={{ gap: 12, paddingHorizontal: 20 }}>
+            contentContainerStyle={{ gap: 12, paddingHorizontal: 24 }}>
             {topCategories.map((cat) => (
               <GlassMetricCard
                 key={`${cat.categoryId}`}
@@ -224,61 +181,60 @@ export default function HomeScreen() {
           </ScrollView>
         )}
 
-        {/* Bloques de ingresos / gastos del mes */}
-        <View className="mt-6 flex-row gap-3 px-5">
+        {/* Bloques de ingresos / gastos del mes + dona */}
+        <View className="flex-row gap-3 px-6" style={{ marginTop: 28 }}>
           <Card style={{ flex: 1 }}>
-            <View
-              className="items-center justify-center rounded-full"
-              style={{ width: 38, height: 38, backgroundColor: colors.successDim }}>
-              <TrendUp size={20} color={colors.success} />
-            </View>
-            <Text className="font-sans mt-3 text-sm text-text-secondary">Ingresos</Text>
-            <Text className="font-sans text-lg font-bold text-text-primary">
+            <Text className="font-sans text-sm text-text-secondary">Ingresos</Text>
+            <Text
+              className="font-sans mt-1 text-lg font-bold"
+              style={{ color: colors.success }}>
               {formatMoney(totals?.income ?? 0)}
             </Text>
-          </Card>
-          <Card style={{ flex: 1 }}>
-            <View
-              className="items-center justify-center rounded-full"
-              style={{ width: 38, height: 38, backgroundColor: colors.dangerDim }}>
-              <TrendDown size={20} color={colors.danger} />
-            </View>
-            <Text className="font-sans mt-3 text-sm text-text-secondary">Gastos</Text>
-            <Text className="font-sans text-lg font-bold text-text-primary">
+            <Text className="font-sans mt-2 text-sm text-text-secondary">Gastos</Text>
+            <Text
+              className="font-sans mt-1 text-lg font-bold"
+              style={{ color: colors.danger }}>
               {formatMoney(totals?.expense ?? 0)}
             </Text>
-          </Card>
-        </View>
-
-        {/* Disponible del mes */}
-        {!loading && (
-          <View className="mt-3 px-5">
-            <Card>
-              <View className="flex-row items-center justify-between">
-                <Text className="font-sans text-sm text-text-secondary">
-                  Disponible (descontando fijos)
+            {!loading && (
+              <>
+                <Text className="font-sans mt-2 text-sm text-text-secondary">
+                  Disponible
                 </Text>
                 <Text
-                  className="font-sans text-base font-bold"
-                  style={{ color: available < 0 ? colors.danger : colors.success }}>
+                  className="font-sans mt-1 text-lg font-bold"
+                  style={{ color: available < 0 ? colors.danger : colors.textPrimary }}>
                   {formatMoney(available)}
                 </Text>
-              </View>
+              </>
+            )}
+          </Card>
+          {topCategories.length > 0 && (
+            <Card style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <DonutChart
+                data={topCategories.map((c) => ({ value: c.total, color: c.color }))}
+                size={110}
+                holeColor={colors.surface}
+                centerLabel={
+                  hasBudget ? `${Math.round(budgetProgress * 100)}%` : undefined
+                }
+                centerSublabel={hasBudget ? 'usado' : undefined}
+              />
             </Card>
-          </View>
-        )}
+          )}
+        </View>
 
         {/* Próximos gastos fijos */}
         {upcoming.length > 0 && (
-          <View className="mt-6">
-            <Text className="font-sans px-5 text-lg font-semibold text-text-primary">
+          <View style={{ marginTop: 28 }}>
+            <Text className="font-sans px-6 text-lg font-semibold text-text-primary">
               Próximos gastos fijos
             </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               className="mt-3"
-              contentContainerStyle={{ gap: 10, paddingHorizontal: 20 }}>
+              contentContainerStyle={{ gap: 10, paddingHorizontal: 24 }}>
               {upcoming.map(({ expense, daysLeft }) => (
                 <Card key={expense.id} style={{ width: 150, padding: 14 }}>
                   <Text
@@ -307,7 +263,7 @@ export default function HomeScreen() {
         )}
 
         {/* Últimas transacciones */}
-        <View className="mt-6 px-5">
+        <View className="px-6" style={{ marginTop: 28 }}>
           <View className="flex-row items-center justify-between">
             <Text className="font-sans text-lg font-semibold text-text-primary">
               Últimas transacciones
@@ -315,7 +271,7 @@ export default function HomeScreen() {
             <Pressable onPress={() => router.push('/gastos')} hitSlop={8}>
               <Text
                 className="font-sans text-sm font-semibold"
-                style={{ color: colors.primaryLight }}>
+                style={{ color: colors.primary }}>
                 Ver todo
               </Text>
             </Pressable>
@@ -329,7 +285,8 @@ export default function HomeScreen() {
               </View>
             ) : (recent ?? []).length === 0 ? (
               <Text className="font-sans py-4 text-center text-sm text-text-secondary">
-                Aún no registras nada este mes.{'\n'}Toca el + para empezar 💪
+                Aún no registras nada este mes.{'\n'}
+                Parte con los botones de arriba 💪
               </Text>
             ) : (
               (recent ?? []).map((tx) => (
@@ -347,27 +304,6 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* FAB (sobre el navbar flotante) */}
-      <Pressable
-        onPress={() => addSheetRef.current?.open()}
-        className="absolute items-center justify-center rounded-full active:opacity-80"
-        style={[
-          shadow,
-          {
-            bottom: 110,
-            right: 20,
-            width: 58,
-            height: 58,
-            backgroundColor: colors.primary,
-          },
-        ]}>
-        <Plus size={28} color="#FFFFFF" weight="bold" />
-      </Pressable>
-
-      <AddActionSheet
-        ref={addSheetRef}
-        onSelect={(type) => txSheetRef.current?.open({ type })}
-      />
       <TransactionSheet ref={txSheetRef} />
     </View>
   );
