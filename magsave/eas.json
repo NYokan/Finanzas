@@ -2,6 +2,7 @@
   "cli": { "version": ">= 5.0.0", "appVersionSource": "remote" },
   "build": {
     "preview": {
+      "autoIncrement": true,
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease"

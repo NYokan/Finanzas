@@ -2,6 +2,7 @@ import type { Icon } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import { colors } from '@/constants/colors';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
   emoji?: string;
@@ -9,10 +10,20 @@ interface Props {
   icon?: Icon;
   title: string;
   subtitle?: string;
+  /** Botón de acción opcional (ej. "Agregar gasto fijo") debajo del texto. */
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
 /** Mensaje cálido cuando una lista todavía no tiene datos. */
-export function EmptyState({ emoji, icon: IconComponent, title, subtitle }: Props) {
+export function EmptyState({
+  emoji,
+  icon: IconComponent,
+  title,
+  subtitle,
+  actionLabel,
+  onAction,
+}: Props) {
   return (
     <View className="items-center px-8 py-10">
       {IconComponent ? (
@@ -27,6 +38,11 @@ export function EmptyState({ emoji, icon: IconComponent, title, subtitle }: Prop
         <Text className="font-sans mt-1 text-center text-sm text-text-secondary">
           {subtitle}
         </Text>
+      ) : null}
+      {actionLabel && onAction ? (
+        <View className="mt-5">
+          <Button label={actionLabel} onPress={onAction} />
+        </View>
       ) : null}
     </View>
   );

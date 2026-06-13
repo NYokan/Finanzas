@@ -45,7 +45,21 @@ export default function AhorroScreen() {
           paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
-        <Text className="font-sans text-xl font-bold text-text-primary">Ahorro</Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="font-sans text-xl font-bold text-text-primary">Ahorro</Text>
+          {/* Botón crear meta en la cabecera: siempre visible, nunca tapado por la navbar */}
+          <Pressable
+            onPress={() => goalSheetRef.current?.open()}
+            hitSlop={8}
+            className="flex-row items-center gap-1.5 rounded-full px-4 py-2.5"
+            style={({ pressed }) => ({
+              backgroundColor: colors.primary,
+              transform: [{ scale: pressed ? 0.96 : 1 }],
+            })}>
+            <Plus size={18} color="#FFFFFF" weight="bold" />
+            <Text className="font-sans text-sm font-semibold text-white">Nueva meta</Text>
+          </Pressable>
+        </View>
 
         {/* Total ahorrado */}
         <Card style={{ marginTop: 16, backgroundColor: colors.primaryDim }}>
@@ -74,6 +88,8 @@ export default function AhorroScreen() {
             icon={PiggyBank}
             title="Tu primera meta te espera"
             subtitle="¿Unas vacaciones? ¿Algo para la casa? Crea una meta y empieza a juntar"
+            actionLabel="Crear meta"
+            onAction={() => goalSheetRef.current?.open()}
           />
         ) : (
           <View className="mt-5 flex-row flex-wrap" style={{ marginHorizontal: -6 }}>

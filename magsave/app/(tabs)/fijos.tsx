@@ -261,12 +261,28 @@ export default function FijosScreen() {
           paddingBottom: tabBarClearance(insets.bottom),
         }}
         showsVerticalScrollIndicator={false}>
-        <Text className="font-sans text-xl font-bold text-text-primary">
-          Gastos fijos
-        </Text>
-        <Text className="font-sans mt-0.5 text-sm capitalize text-text-secondary">
-          {monthYearLabel(monthYear)}
-        </Text>
+        <View className="flex-row items-start justify-between">
+          <View className="flex-1">
+            <Text className="font-sans text-xl font-bold text-text-primary">
+              Gastos fijos
+            </Text>
+            <Text className="font-sans mt-0.5 text-sm capitalize text-text-secondary">
+              {monthYearLabel(monthYear)}
+            </Text>
+          </View>
+          {/* Botón agregar en la cabecera: siempre visible, nunca tapado por la navbar */}
+          <Pressable
+            onPress={() => sheetRef.current?.open()}
+            hitSlop={8}
+            className="flex-row items-center gap-1.5 rounded-full px-4 py-2.5"
+            style={({ pressed }) => ({
+              backgroundColor: colors.primary,
+              transform: [{ scale: pressed ? 0.96 : 1 }],
+            })}>
+            <Plus size={18} color="#FFFFFF" weight="bold" />
+            <Text className="font-sans text-sm font-semibold text-white">Agregar</Text>
+          </Pressable>
+        </View>
 
         {/* Resumen */}
         <View className="mt-5">
@@ -312,6 +328,8 @@ export default function FijosScreen() {
               emoji="📅"
               title="Sin gastos fijos aún"
               subtitle="Agrega arriendo, internet, suscripciones... y nunca más se te pasa una fecha"
+              actionLabel="Agregar gasto fijo"
+              onAction={() => sheetRef.current?.open()}
             />
           ) : (
             <View className="flex-row flex-wrap" style={{ marginHorizontal: -5 }}>
