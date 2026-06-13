@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { View } from 'react-native';
 
 import { colors } from '@/constants/colors';
@@ -8,15 +9,23 @@ interface Props {
   color?: string;
   height?: number;
   trackColor?: string;
+  /** 'gradient' rellena con el gradiente rosa (metas de ahorro) */
+  variant?: 'solid' | 'gradient';
 }
 
 export function ProgressBar({
   progress,
   color = colors.primary,
   height = 10,
-  trackColor = colors.border,
+  trackColor = colors.track,
+  variant = 'solid',
 }: Props) {
   const pct = Math.max(0, Math.min(1, progress));
+  const fillStyle = {
+    width: `${pct * 100}%`,
+    height: '100%',
+    borderRadius: height / 2,
+  } as const;
   return (
     <View
       style={{
@@ -25,14 +34,16 @@ export function ProgressBar({
         backgroundColor: trackColor,
         overflow: 'hidden',
       }}>
-      <View
-        style={{
-          width: `${pct * 100}%`,
-          height: '100%',
-          borderRadius: height / 2,
-          backgroundColor: color,
-        }}
-      />
+      {variant === 'gradient' ? (
+        <LinearGradient
+          colors={[colors.primaryLight, colors.primary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={fillStyle}
+        />
+      ) : (
+        <View style={[fillStyle, { backgroundColor: color }]} />
+      )}
     </View>
   );
 }

@@ -109,7 +109,7 @@ export const FixedExpenseSheet = forwardRef<FixedExpenseSheetRef, object>(
           placeholder="Nombre (ej: Arriendo, Internet...)"
           placeholderTextColor={colors.textSecondary}
           style={{
-            backgroundColor: colors.bg,
+            backgroundColor: colors.inputBg,
             borderRadius: 12,
             paddingHorizontal: 14,
             paddingVertical: 11,

@@ -217,7 +217,7 @@ export const GoalSheet = forwardRef<GoalSheetRef, object>((_props, ref) => {
           placeholderTextColor={colors.textSecondary}
           style={{
             flex: 1,
-            backgroundColor: colors.bg,
+            backgroundColor: colors.inputBg,
             borderRadius: 12,
             paddingHorizontal: 14,
             paddingVertical: 11,

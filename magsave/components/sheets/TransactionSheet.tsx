@@ -213,7 +213,7 @@ export const TransactionSheet = forwardRef<TransactionSheetRef, object>(
             placeholderTextColor={colors.textSecondary}
             style={{
               flex: 1,
-              backgroundColor: colors.bg,
+              backgroundColor: colors.inputBg,
               borderRadius: 12,
               paddingHorizontal: 14,
               paddingVertical: 10,
@@ -244,7 +244,11 @@ export const TransactionSheet = forwardRef<TransactionSheetRef, object>(
 
         {/* Teclado numérico custom */}
         <View className="mt-3">
-          <NumericKeyboard value={amount} onChange={setAmount} />
+          <NumericKeyboard
+            value={amount}
+            onChange={setAmount}
+            quickAmounts={[1000, 5000, 10000, 20000]}
+          />
         </View>
 
         <View className="mt-3">

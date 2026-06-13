@@ -13,6 +13,8 @@ import {
 } from 'phosphor-react-native';
 import { View } from 'react-native';
 
+import { colors } from '@/constants/colors';
+
 // Registro de íconos phosphor usados por las categorías (ver db/seed.ts)
 const ICONS: Record<string, Icon> = {
   Pizza,
@@ -38,7 +40,7 @@ interface Props {
   /** color de la categoría (hex) */
   color: string;
   size?: number;
-  /** fondo del círculo; por defecto el color de la categoría tenue */
+  /** fondo del círculo; por defecto gris claro neutro */
   bgColor?: string;
 }
 
@@ -51,7 +53,7 @@ export function CategoryIcon({ icon, color, size = 40, bgColor }: Props) {
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: bgColor ?? `${color}22`,
+        backgroundColor: bgColor ?? colors.surfaceAlt,
         alignItems: 'center',
         justifyContent: 'center',
       }}>

@@ -17,6 +17,8 @@ module.exports = {
         'text-primary': '#1C1C1E',
         'text-secondary': '#8E8E93',
         line: '#ECECF0',
+        track: '#E8E8E8',
+        input: '#F2F2F6',
       },
       borderRadius: {
         card: '24px',

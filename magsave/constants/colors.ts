@@ -15,6 +15,8 @@ export const colors = {
   textPrimary: '#1C1C1E', // casi negro — títulos y montos
   textSecondary: '#8E8E93', // gris medio — subtítulos y fechas
   border: '#ECECF0',
+  track: '#E8E8E8', // track de barras de progreso y dona
+  inputBg: '#F2F2F6', // fondo de inputs dentro de sheets blancos
   glassBorder: 'rgba(255,255,255,0.5)', // borde glass de la hero card
 } as const;
 

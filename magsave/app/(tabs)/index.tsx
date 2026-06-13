@@ -19,7 +19,7 @@ import {
 } from '@/components/sheets/TransactionSheet';
 import { BalanceHeader } from '@/components/ui/BalanceHeader';
 import { Card } from '@/components/ui/Card';
-import { CARD_GRADIENTS, GlassMetricCard } from '@/components/ui/GlassMetricCard';
+import { GlassMetricCard } from '@/components/ui/GlassMetricCard';
 import { ProgressBar, budgetColor } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors, shadow } from '@/constants/colors';
@@ -210,14 +210,14 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             className="mt-6"
             contentContainerStyle={{ gap: 12, paddingHorizontal: 20 }}>
-            {topCategories.map((cat, index) => (
+            {topCategories.map((cat) => (
               <GlassMetricCard
                 key={`${cat.categoryId}`}
                 icon={categoryIconComponent(cat.icon)}
                 title={cat.name}
                 amount={formatMoney(cat.total)}
                 badge={spent > 0 ? `${Math.round((cat.total / spent) * 100)}%` : undefined}
-                gradient={CARD_GRADIENTS[index % CARD_GRADIENTS.length]}
+                accentColor={cat.color}
                 onPress={() => router.push('/gastos')}
               />
             ))}

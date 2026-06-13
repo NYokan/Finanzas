@@ -171,7 +171,7 @@ export const GoalDetailSheet = forwardRef<GoalDetailSheetRef, Props>(
               placeholder="Nota (opcional)"
               placeholderTextColor={colors.textSecondary}
               style={{
-                backgroundColor: colors.bg,
+                backgroundColor: colors.inputBg,
                 borderRadius: 12,
                 paddingHorizontal: 14,
                 paddingVertical: 10,

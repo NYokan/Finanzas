@@ -43,7 +43,7 @@ export const AppSheet = forwardRef<BottomSheetModal, Props>(
           backgroundColor: colors.surface,
           borderRadius: 28,
         }}
-        handleIndicatorStyle={{ backgroundColor: colors.border, width: 44 }}>
+        handleIndicatorStyle={{ backgroundColor: '#D8D8DC', width: 44 }}>
         <BottomSheetView
           style={{
             paddingHorizontal: 20,
