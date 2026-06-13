@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AdviceCard } from '@/components/AdviceCard';
 import { categoryIconComponent } from '@/components/CategoryIcon';
 import { TransactionItem } from '@/components/TransactionItem';
 import { DonutChart } from '@/components/charts/DonutChart';
@@ -19,6 +20,7 @@ import { HeroBalanceCard } from '@/components/ui/HeroBalanceCard';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors } from '@/constants/colors';
 import type { FixedExpenseWithStatus } from '@/db/queries/fixedExpenses';
+import { useAdvice } from '@/hooks/useAdvice';
 import { useBudgetSummary } from '@/hooks/useBudgets';
 import { useActiveFixedTotal, useFixedExpenses } from '@/hooks/useFixedExpenses';
 import {
@@ -76,6 +78,7 @@ export default function HomeScreen() {
   const { data: byCategory } = useExpensesByCategory(monthYear);
   const { data: fixedExpenses } = useFixedExpenses(monthYear);
   const { data: recent, loading: loadingRecent } = useRecentTransactions(5);
+  const { data: advice } = useAdvice();
 
   const txSheetRef = useRef<TransactionSheetRef>(null);
 
@@ -143,7 +146,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Hero: presupuesto + acciones rápidas */}
-        <View className="px-6" style={{ marginTop: 28, marginBottom: 32 }}>
+        <View className="px-6" style={{ marginTop: 28 }}>
           {loading ? (
             <Skeleton height={190} radius={24} />
           ) : (
@@ -161,11 +164,19 @@ export default function HomeScreen() {
           )}
         </View>
 
+        {/* Primer consejo del motor local, como banner discreto */}
+        {(advice ?? []).length > 0 && (
+          <View className="px-6" style={{ marginTop: 20 }}>
+            <AdviceCard advice={(advice ?? [])[0]} compact />
+          </View>
+        )}
+
         {/* Carrusel de categorías del mes */}
         {topCategories.length > 0 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 32 }}
             contentContainerStyle={{ gap: 12, paddingHorizontal: 24 }}>
             {topCategories.map((cat) => (
               <GlassMetricCard

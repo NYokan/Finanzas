@@ -11,6 +11,7 @@ module.exports = {
         success: '#16A34A',
         danger: '#E25C3D',
         warning: '#D99A1B',
+        'warning-dim': '#FAF0DC',
         bg: '#F7F7F9',
         surface: '#FFFFFF',
         'surface-alt': '#F0F0F0',

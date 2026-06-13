@@ -9,6 +9,7 @@ export const colors = {
   danger: '#E25C3D', // coral — gastos, alertas
   dangerDim: '#FDEDE6', // tinte coral para fondos
   warning: '#D99A1B', // ámbar — advertencias, cerca del límite
+  warningDim: '#FAF0DC', // tinte ámbar para fondos
   bg: '#F7F7F9', // fondo principal, gris muy claro (no blanco puro)
   surface: '#FFFFFF', // cards blancas
   surfaceAlt: '#F0F0F0', // círculos de íconos, elementos sobre cards

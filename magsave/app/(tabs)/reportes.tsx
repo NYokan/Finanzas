@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AdviceCard } from '@/components/AdviceCard';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { MonthlyBars } from '@/components/charts/MonthlyBars';
 import { BudgetSheet, type BudgetSheetRef } from '@/components/sheets/BudgetSheet';
@@ -11,6 +12,7 @@ import { Pill } from '@/components/ui/Pill';
 import { ProgressBar, budgetColor } from '@/components/ui/ProgressBar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { colors } from '@/constants/colors';
+import { useAdvice } from '@/hooks/useAdvice';
 import { useBudgetsWithUsage } from '@/hooks/useBudgets';
 import { useAllCategories } from '@/hooks/useCategories';
 import { useMonthlySeries, useStreak } from '@/hooks/useReports';
@@ -35,6 +37,7 @@ export default function ReportesScreen() {
   const { data: streak } = useStreak();
   const { data: budgets } = useBudgetsWithUsage(monthYear);
   const { data: categories } = useAllCategories();
+  const { data: advice } = useAdvice();
 
   const insights = useMemo(() => {
     const points = series ?? [];
@@ -138,6 +141,20 @@ export default function ReportesScreen() {
             </Card>
           </View>
         </View>
+
+        {/* Consejos del motor local */}
+        {(advice ?? []).length > 0 && (
+          <>
+            <Text className="font-sans mt-6 text-xl font-semibold text-text-primary">
+              Consejos para ti
+            </Text>
+            <View className="mt-3 gap-3">
+              {(advice ?? []).map((a) => (
+                <AdviceCard key={a.id} advice={a} />
+              ))}
+            </View>
+          </>
+        )}
 
         {/* Sección presupuesto */}
         <Text className="font-sans mt-6 text-xl font-semibold text-text-primary">
